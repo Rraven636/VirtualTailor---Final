@@ -188,7 +188,9 @@ namespace ColourSkel
             //this.backgroundRemovedColorStream = backgroundObj.getBackgroundRemovedColorStream();
 
             //Tie image source to output of object
-            this.Image.Source = backgroundObj.getBackgroundRemovedImage();
+            //this.Image.Source = backgroundObj.getBackgroundRemovedImage();
+
+            backgroundObj.setImageSource(this.Image.Source);
 
             // Add an event handler to be called when the background removed color frame is ready, so that we can
             // composite the image and output to the app
@@ -247,7 +249,6 @@ namespace ColourSkel
         {
             LiveMeasure();
         }
-
         /*
         /// <summary>
         /// Called when the KinectSensorChooser gets a new sensor
@@ -262,7 +263,7 @@ namespace ColourSkel
                 {
                     //DisableColour(args.OldSensor);
                     //DisableSkel(args.OldSensor);
-                    //DisableBackgroundRemoval(args.OldSensor);
+                    DisableBackgroundRemoval(args.OldSensor);
                 }
                 catch (InvalidOperationException)
                 {
@@ -277,7 +278,7 @@ namespace ColourSkel
                 {
                     //this.InitiateColour(args.NewSensor);
                     //this.InitiateSkel(args.NewSensor);
-                    //this.InitiateBackgroundRemoval(args.NewSensor);                    
+                    this.InitiateBackgroundRemoval(args.NewSensor);                    
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -289,6 +290,7 @@ namespace ColourSkel
         }
         */
 
+        
         /// <summary>
         /// Event handler for Kinect sensor's DepthFrameReady event
         /// </summary>
@@ -410,7 +412,7 @@ namespace ColourSkel
                 this.currentlyTrackedSkeletonId = nearestSkeleton;
             }
         }
-
+        
         /// <summary>
         /// Called when the KinectSensorChooser gets a new sensor
         /// </summary>
@@ -468,18 +470,18 @@ namespace ColourSkel
 
                     try
                     {
-                        /*
-                        args.NewSensor.DepthStream.Range = this.checkBoxNearMode.IsChecked.GetValueOrDefault()
-                                                    ? DepthRange.Near
-                                                    : DepthRange.Default;
-                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
-                        */
+                        
+                        //args.NewSensor.DepthStream.Range = this.checkBoxNearMode.IsChecked.GetValueOrDefault()
+                        //                            ? DepthRange.Near
+                        //                            : DepthRange.Default;
+                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
+                        
                     }
                     catch (InvalidOperationException)
                     {
                         // Non Kinect for Windows devices do not support Near mode, so reset back to default mode.
-                        args.NewSensor.DepthStream.Range = DepthRange.Default;
-                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
+                        //args.NewSensor.DepthStream.Range = DepthRange.Default;
+                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
                     }
 
                     //this.statusBarText.Text = Properties.Resources.ReadyForScreenshot;
@@ -491,7 +493,7 @@ namespace ColourSkel
                 }
             }
         }
-
+        
 
     }
 }
