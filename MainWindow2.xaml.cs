@@ -87,6 +87,8 @@ namespace ColourSkel
         /// </summary>
         private BackgroundRemovalLib backgroundObj;
 
+        private SkeletonFrame skelFrame;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -261,9 +263,9 @@ namespace ColourSkel
             {
                 try
                 {
-                    //DisableColour(args.OldSensor);
-                    //DisableSkel(args.OldSensor);
-                    DisableBackgroundRemoval(args.OldSensor);
+                    DisableColour(args.OldSensor);
+                    DisableSkel(args.OldSensor);
+                    //DisableBackgroundRemoval(args.OldSensor);
                 }
                 catch (InvalidOperationException)
                 {
@@ -276,9 +278,9 @@ namespace ColourSkel
             {
                 try
                 {
-                    //this.InitiateColour(args.NewSensor);
-                    //this.InitiateSkel(args.NewSensor);
-                    this.InitiateBackgroundRemoval(args.NewSensor);                    
+                    this.InitiateColour(args.NewSensor);
+                    this.InitiateSkel(args.NewSensor);
+                    //this.InitiateBackgroundRemoval(args.NewSensor);                    
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -328,6 +330,7 @@ namespace ColourSkel
                     {
                         skeletonFrame.CopySkeletonDataTo(this.skeletons);
                         this.backgroundRemovedColorStream.ProcessSkeleton(this.skeletons, skeletonFrame.Timestamp);
+                        skelObj = new SkeletonLib(skeletonFrame);
                     }
                 }
 
@@ -355,9 +358,7 @@ namespace ColourSkel
                         || this.foregroundBitmap.PixelHeight != backgroundRemovedFrame.Height)
                     {
                         this.foregroundBitmap = new WriteableBitmap(backgroundRemovedFrame.Width, backgroundRemovedFrame.Height, 96.0, 96.0, PixelFormats.Bgra32, null);
-
-                        // Set the image we display to point to the bitmap where we'll put the image data
-                        this.Image.Source = this.foregroundBitmap;
+                        
                     }
 
                     // Write the pixel data into our bitmap
@@ -366,6 +367,24 @@ namespace ColourSkel
                         backgroundRemovedFrame.GetRawPixelData(),
                         this.foregroundBitmap.PixelWidth * sizeof(int),
                         0);
+
+                    // Set the image we display to point to the bitmap where we'll put the image data
+                    //this.Image.Source = this.foregroundBitmap;
+                    
+                    if (skelObj.isEmpty() == false)
+                    {
+                        skelObj.SkeletonStart(this.foregroundBitmap, this.sensorChooser.Kinect);
+
+                        // Set the image we display to point to the bitmap where we'll put the image data
+                        this.Image.Source = skelObj.getOutputImage();
+                    }
+                    else
+                    {
+                        // Set the image we display to point to the bitmap where we'll put the image data
+                        this.Image.Source = this.foregroundBitmap;
+                    }
+                    
+
                 }
             }
         }
