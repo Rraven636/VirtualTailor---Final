@@ -104,6 +104,8 @@ namespace ColourSkel
 
         private Skeleton[] skeletons = new Skeleton[0];
 
+        private byte[] foregroundArray;
+
         public SkeletonLib()
         {
             this.RenderWidth = 0;
@@ -173,6 +175,15 @@ namespace ColourSkel
         public void setActiveKinectSensor(KinectSensor sensorIn)
         {
             this.sensor = sensorIn;
+        }
+
+        public void setPixelArray(byte[] Pixels)
+        {
+            this.foregroundArray = new byte[Pixels.Length];
+            for(int i = 0; i < Pixels.Length; i++)
+            {
+                foregroundArray[i] = Pixels[i];
+            }
         }
 
         /// <summary>
@@ -377,10 +388,86 @@ namespace ColourSkel
             Measure measureObj = new Measure(skeleton);
             var perpGrad = measureObj.perpendicularGrad(startPoint, endPoint);
             var midPoint = measureObj.midpoint(startPoint, endPoint);
-            Point startPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)startPoint.X);
-            Point endPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)endPoint.X);
+            //Point startPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)startPoint.X);
+            //Point endPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)endPoint.X);
+            Point startPerpPoint = getStartPoint(measureObj, midPoint, perpGrad);
+            Point endPerpPoint = getEndPoint(measureObj, midPoint, perpGrad);
             Pen drawPen = this.perpLineTrackedBone;
             drawingContext.DrawLine(drawPen, startPerpPoint, endPerpPoint);
+        }
+
+        public Point getStartPoint(Measure measObj, Point midpoint, float perpGrad)
+        {
+            Point potentialStart = midpoint;
+            int loopCount = 1;
+
+            while (loopCount <= 10)
+            {
+                int xValue = (int)midpoint.X - loopCount * 10;
+                potentialStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
+                byte pixelAtPoint = getPixelValue(potentialStart);
+                if(pixelAtPoint == 0)
+                {
+                    break;
+                }
+                loopCount++;
+            }
+
+            Point fineStart = potentialStart;
+            int loopCount2 = 1;
+            while (loopCount2 < 10)
+            {
+                int xValue = (int)potentialStart.X + loopCount2;
+                fineStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
+                byte pixelAtPoint = getPixelValue(potentialStart);
+                if (pixelAtPoint != 0)
+                {
+                    break;
+                }
+                loopCount2++;
+            }
+
+            return fineStart;
+        }
+
+        public Point getEndPoint(Measure measObj, Point midpoint, float perpGrad)
+        {
+            Point potentialStart = midpoint;
+            int loopCount = 1;
+
+            while (loopCount <= 10)
+            {
+                int xValue = (int)midpoint.X + loopCount * 10;
+                potentialStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
+                byte pixelAtPoint = getPixelValue(potentialStart);
+                if (pixelAtPoint == 0)
+                {
+                    break;
+                }
+                loopCount++;
+            }
+
+            Point fineStart = potentialStart;
+            int loopCount2 = 1;
+            while (loopCount2 < 10)
+            {
+                int xValue = (int)potentialStart.X - loopCount2;
+                fineStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
+                byte pixelAtPoint = getPixelValue(potentialStart);
+                if (pixelAtPoint != 0)
+                {
+                    break;
+                }
+                loopCount2++;
+            }
+
+            return fineStart;
+        }
+
+        public byte getPixelValue(Point point)
+        {
+            int arrayVal = (int)point.Y * 255 + (int)point.X;
+            return this.foregroundArray[arrayVal];
         }
 
         /// <summary>

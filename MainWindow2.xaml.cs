@@ -373,6 +373,13 @@ namespace ColourSkel
                     
                     if (skelObj.isEmpty() == false)
                     {
+                        byte[] bitmapArray = new byte[foregroundBitmap.PixelHeight * foregroundBitmap.PixelWidth];
+                        this.foregroundBitmap.CopyPixels(
+                             new Int32Rect(0, 0, this.foregroundBitmap.PixelWidth, this.foregroundBitmap.PixelHeight), 
+                             bitmapArray, 
+                             this.foregroundBitmap.PixelWidth * sizeof(int), 
+                             0);
+                        skelObj.setPixelArray(bitmapArray);
                         skelObj.SkeletonStart(this.foregroundBitmap, this.sensorChooser.Kinect);
 
                         // Set the image we display to point to the bitmap where we'll put the image data
