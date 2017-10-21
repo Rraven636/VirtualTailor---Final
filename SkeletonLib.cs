@@ -102,6 +102,8 @@ namespace ColourSkel
         /// </summary>
         private SkeletonFrame skelFrame;
 
+        private Skeleton[] skeletons = new Skeleton[0];
+
         public SkeletonLib()
         {
             this.RenderWidth = 0;
@@ -148,6 +150,15 @@ namespace ColourSkel
             this.inferredJointBrush = Brushes.Yellow;
             this.trackedBonePen = new Pen(Brushes.Green, 6);
             this.inferredBonePen = new Pen(Brushes.Gray, 1);
+
+            using (SkeletonFrame skeletonFrame = skelFrame)
+            {
+                if (skeletonFrame != null)
+                {
+                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                    skeletonFrame.CopySkeletonDataTo(skeletons);
+                }
+            }
         }
 
         /// <summary>
@@ -430,18 +441,7 @@ namespace ColourSkel
         /// <param name="sender">object sending the event</param>
         /// <param name="e">event arguments</param>
         public void processSkeletonFrame()
-        {
-            Skeleton[] skeletons = new Skeleton[0];
-
-            using (SkeletonFrame skeletonFrame = skelFrame)
-            {
-                if (skeletonFrame != null)
-                {
-                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
-                }
-            }
-
+        {            
             using (DrawingContext dc = this.drawingGroup.Open())
             {
                 if (this.colourImageSource != null)
@@ -491,6 +491,11 @@ namespace ColourSkel
         public Skeleton getSkeletonOut()
         {
             return this.skeletonOut;
+        }
+
+        public SkeletonFrame getSkeletonFrameOut()
+        {
+            return this.skelFrame;
         }
 
         public void measureJoints(JointType jointType1, JointType jointType2)
