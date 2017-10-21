@@ -368,9 +368,12 @@ namespace ColourSkel
                         this.foregroundBitmap.PixelWidth * sizeof(int),
                         0);
 
-                    if (skelObj.getSkeletonFrameOut() != null)
+                    // Set the image we display to point to the bitmap where we'll put the image data
+                    //this.Image.Source = this.foregroundBitmap;
+                    
+                    if (skelObj.isEmpty() == false)
                     {
-                        skelObj.SkeletonStart(this.foregroundBitmap);
+                        skelObj.SkeletonStart(this.foregroundBitmap, this.sensorChooser.Kinect);
 
                         // Set the image we display to point to the bitmap where we'll put the image data
                         this.Image.Source = skelObj.getOutputImage();
@@ -380,6 +383,7 @@ namespace ColourSkel
                         // Set the image we display to point to the bitmap where we'll put the image data
                         this.Image.Source = this.foregroundBitmap;
                     }
+                    
 
                 }
             }

@@ -170,6 +170,11 @@ namespace ColourSkel
             this.colourImageSource = img;
         }
 
+        public void setActiveKinectSensor(KinectSensor sensorIn)
+        {
+            this.sensor = sensorIn;
+        }
+
         /// <summary>
         /// Draws indicators to show which edges are clipping skeleton data
         /// </summary>
@@ -229,7 +234,7 @@ namespace ColourSkel
             this.imageSource = new DrawingImage(this.drawingGroup);
         }
 
-        public void SkeletonStart (WriteableBitmap colourImg)
+        public void SkeletonStart (WriteableBitmap colourImg, KinectSensor sensorIn)
         {
             if (skelFrame == null)
             {
@@ -240,6 +245,8 @@ namespace ColourSkel
 
             // Create an image source that we can use in our image control
             this.imageSource = new DrawingImage(this.drawingGroup);
+
+            setActiveKinectSensor(sensorIn);
 
             // Set the input image to the passed in image parameter
             setColourImage(colourImg);
@@ -513,6 +520,21 @@ namespace ColourSkel
         public String getMeasurements()
         {
             return this.measureOut;
+        }
+
+        public Boolean isEmpty()
+        {
+            if (skeletons.Length != 0)
+            {
+                foreach (Skeleton skel in skeletons)
+                {
+                    if (skel.TrackingState == SkeletonTrackingState.Tracked)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 }
