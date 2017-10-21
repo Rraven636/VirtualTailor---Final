@@ -87,6 +87,8 @@ namespace ColourSkel
         /// </summary>
         private BackgroundRemovalLib backgroundObj;
 
+        private SkeletonFrame skelFrame;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -188,7 +190,9 @@ namespace ColourSkel
             //this.backgroundRemovedColorStream = backgroundObj.getBackgroundRemovedColorStream();
 
             //Tie image source to output of object
-            this.Image.Source = backgroundObj.getBackgroundRemovedImage();
+            //this.Image.Source = backgroundObj.getBackgroundRemovedImage();
+
+            backgroundObj.setImageSource(this.Image.Source);
 
             // Add an event handler to be called when the background removed color frame is ready, so that we can
             // composite the image and output to the app
@@ -247,7 +251,6 @@ namespace ColourSkel
         {
             LiveMeasure();
         }
-
         /*
         /// <summary>
         /// Called when the KinectSensorChooser gets a new sensor
@@ -260,8 +263,8 @@ namespace ColourSkel
             {
                 try
                 {
-                    //DisableColour(args.OldSensor);
-                    //DisableSkel(args.OldSensor);
+                    DisableColour(args.OldSensor);
+                    DisableSkel(args.OldSensor);
                     //DisableBackgroundRemoval(args.OldSensor);
                 }
                 catch (InvalidOperationException)
@@ -275,8 +278,8 @@ namespace ColourSkel
             {
                 try
                 {
-                    //this.InitiateColour(args.NewSensor);
-                    //this.InitiateSkel(args.NewSensor);
+                    this.InitiateColour(args.NewSensor);
+                    this.InitiateSkel(args.NewSensor);
                     //this.InitiateBackgroundRemoval(args.NewSensor);                    
                 }
                 catch (InvalidOperationException ex)
@@ -289,6 +292,7 @@ namespace ColourSkel
         }
         */
 
+        
         /// <summary>
         /// Event handler for Kinect sensor's DepthFrameReady event
         /// </summary>
@@ -326,6 +330,7 @@ namespace ColourSkel
                     {
                         skeletonFrame.CopySkeletonDataTo(this.skeletons);
                         this.backgroundRemovedColorStream.ProcessSkeleton(this.skeletons, skeletonFrame.Timestamp);
+                        skelObj = new SkeletonLib(skeletonFrame);
                     }
                 }
 
@@ -353,9 +358,7 @@ namespace ColourSkel
                         || this.foregroundBitmap.PixelHeight != backgroundRemovedFrame.Height)
                     {
                         this.foregroundBitmap = new WriteableBitmap(backgroundRemovedFrame.Width, backgroundRemovedFrame.Height, 96.0, 96.0, PixelFormats.Bgra32, null);
-
-                        // Set the image we display to point to the bitmap where we'll put the image data
-                        this.Image.Source = this.foregroundBitmap;
+                        
                     }
 
                     // Write the pixel data into our bitmap
@@ -364,6 +367,24 @@ namespace ColourSkel
                         backgroundRemovedFrame.GetRawPixelData(),
                         this.foregroundBitmap.PixelWidth * sizeof(int),
                         0);
+
+                    // Set the image we display to point to the bitmap where we'll put the image data
+                    //this.Image.Source = this.foregroundBitmap;
+                    
+                    if (skelObj.isEmpty() == false)
+                    {
+                        skelObj.SkeletonStart(this.foregroundBitmap, this.sensorChooser.Kinect);
+
+                        // Set the image we display to point to the bitmap where we'll put the image data
+                        this.Image.Source = skelObj.getOutputImage();
+                    }
+                    else
+                    {
+                        // Set the image we display to point to the bitmap where we'll put the image data
+                        this.Image.Source = this.foregroundBitmap;
+                    }
+                    
+
                 }
             }
         }
@@ -410,7 +431,7 @@ namespace ColourSkel
                 this.currentlyTrackedSkeletonId = nearestSkeleton;
             }
         }
-
+        
         /// <summary>
         /// Called when the KinectSensorChooser gets a new sensor
         /// </summary>
@@ -468,18 +489,18 @@ namespace ColourSkel
 
                     try
                     {
-                        /*
-                        args.NewSensor.DepthStream.Range = this.checkBoxNearMode.IsChecked.GetValueOrDefault()
-                                                    ? DepthRange.Near
-                                                    : DepthRange.Default;
-                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
-                        */
+                        
+                        //args.NewSensor.DepthStream.Range = this.checkBoxNearMode.IsChecked.GetValueOrDefault()
+                        //                            ? DepthRange.Near
+                        //                            : DepthRange.Default;
+                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
+                        
                     }
                     catch (InvalidOperationException)
                     {
                         // Non Kinect for Windows devices do not support Near mode, so reset back to default mode.
-                        args.NewSensor.DepthStream.Range = DepthRange.Default;
-                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
+                        //args.NewSensor.DepthStream.Range = DepthRange.Default;
+                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
                     }
 
                     //this.statusBarText.Text = Properties.Resources.ReadyForScreenshot;
@@ -491,7 +512,7 @@ namespace ColourSkel
                 }
             }
         }
-
+        
 
     }
 }

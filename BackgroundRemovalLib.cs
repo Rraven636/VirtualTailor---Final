@@ -50,6 +50,8 @@ namespace ColourSkel
         /// </summary>
         private int currentlyTrackedSkeletonId;
 
+        private ImageSource imgSource;
+
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
@@ -139,6 +141,8 @@ namespace ColourSkel
                         this.foregroundBitmap = new WriteableBitmap(backgroundRemovedFrame.Width, backgroundRemovedFrame.Height, 96.0, 96.0, PixelFormats.Bgra32, null);
 
                     }
+
+                    this.imgSource = this.foregroundBitmap;
 
                     // Write the pixel data into our bitmap
                     this.foregroundBitmap.WritePixels(
@@ -252,6 +256,11 @@ namespace ColourSkel
                 // KinectSensor might enter an invalid state while enabling/disabling streams or stream features.
                 // E.g.: sensor might be abruptly unplugged.
             }
+        }
+
+        public void setImageSource(ImageSource imgSourceIn)
+        {
+            this.imgSource = imgSourceIn;
         }
     }
 
