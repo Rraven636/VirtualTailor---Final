@@ -87,6 +87,8 @@ namespace ColourSkel
         /// </summary>
         private BackgroundRemovalLib backgroundObj;
 
+        private SkeletonFrame skelFrame;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -328,6 +330,7 @@ namespace ColourSkel
                     {
                         skeletonFrame.CopySkeletonDataTo(this.skeletons);
                         this.backgroundRemovedColorStream.ProcessSkeleton(this.skeletons, skeletonFrame.Timestamp);
+                        skelFrame = skeletonFrame;
                     }
                 }
 

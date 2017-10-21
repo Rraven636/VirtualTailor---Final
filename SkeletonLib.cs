@@ -90,12 +90,17 @@ namespace ColourSkel
         /// <summary>
         /// Skeleton to be used to measure
         /// </summary>
-        Skeleton skeletonOut;
+        private Skeleton skeletonOut;
 
         /// <summary>
         /// Variable holding measurement reading
         /// </summary>
-        String measureOut;
+        private String measureOut;
+
+        /// <summary>
+        /// The skeletonframe sent from a skeleton ready event
+        /// </summary>
+        private SkeletonFrame skelFrame;
 
         public SkeletonLib()
         {
@@ -110,11 +115,29 @@ namespace ColourSkel
             this.trackedBonePen = new Pen(Brushes.Green, 6);
             this.inferredBonePen = new Pen(Brushes.Gray, 1);
             this.sensor = null;
+            this.skelFrame = null;
         }
 
         public SkeletonLib(KinectSensor sensor)
         {
             this.sensor = sensor;
+            this.skelFrame = null;
+            this.RenderWidth = 640.0f;
+            this.RenderHeight = 480.0f;
+            this.JointThickness = 3;
+            this.BodyCenterThickness = 10;
+            this.ClipBoundsThickness = 10;
+            this.centerPointBrush = Brushes.Blue;
+            this.trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
+            this.inferredJointBrush = Brushes.Yellow;
+            this.trackedBonePen = new Pen(Brushes.Green, 6);
+            this.inferredBonePen = new Pen(Brushes.Gray, 1);
+        }
+
+        public SkeletonLib(SkeletonFrame skelFrame)
+        {
+            this.skelFrame = skelFrame;
+            this.sensor = null;
             this.RenderWidth = 640.0f;
             this.RenderHeight = 480.0f;
             this.JointThickness = 3;
@@ -178,14 +201,40 @@ namespace ColourSkel
 
         public void SkeletonStart()
         {
-            // Turn on the skeleton stream to receive skeleton frames
-            this.sensor.SkeletonStream.Enable();
+            if (sensor != null)
+            {
+                // Turn on the skeleton stream to receive skeleton frames
+                this.sensor.SkeletonStream.Enable();
+            }
+            else
+            {
+                return;
+            }
 
             // Create the drawing group we'll use for drawing
             this.drawingGroup = new DrawingGroup();
 
             // Create an image source that we can use in our image control
             this.imageSource = new DrawingImage(this.drawingGroup);
+        }
+
+        public void SkeletonStart (WriteableBitmap colourImg)
+        {
+            if (skelFrame == null)
+            {
+                return;
+            }
+            // Create the drawing group we'll use for drawing
+            this.drawingGroup = new DrawingGroup();
+
+            // Create an image source that we can use in our image control
+            this.imageSource = new DrawingImage(this.drawingGroup);
+
+            // Set the input image to the passed in image parameter
+            setColourImage(colourImg);
+
+            // Run the code normally in the SkeletonFrameReady event 
+            processSkeletonFrame();
         }
 
         /// <summary>
@@ -307,11 +356,11 @@ namespace ColourSkel
         /// <param name="jointType1">joint to end the refernece line at</param>
         public void DrawPerpLine(Skeleton skeleton, DrawingContext drawingContext, Point startPoint, Point endPoint)
         {
-            Measure tempObj = new Measure(skeleton);
-            var perpGrad = tempObj.perpendicularGrad(startPoint, endPoint);
-            var midPoint = tempObj.midpoint(startPoint, endPoint);
-            Point startPerpPoint = tempObj.getNewPoint(midPoint, perpGrad, (int)startPoint.X);
-            Point endPerpPoint = tempObj.getNewPoint(midPoint, perpGrad, (int)endPoint.X);
+            Measure measureObj = new Measure(skeleton);
+            var perpGrad = measureObj.perpendicularGrad(startPoint, endPoint);
+            var midPoint = measureObj.midpoint(startPoint, endPoint);
+            Point startPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)startPoint.X);
+            Point endPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)endPoint.X);
             Pen drawPen = this.perpLineTrackedBone;
             drawingContext.DrawLine(drawPen, startPerpPoint, endPerpPoint);
         }
@@ -368,6 +417,65 @@ namespace ColourSkel
                             BodyCenterThickness);
                         }                        
                     }                    
+                }
+
+                // prevent drawing outside of our render area
+                this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+            }
+        }
+
+        /// <summary>
+        /// Event handler for Kinect sensor's SkeletonFrameReady event
+        /// </summary>
+        /// <param name="sender">object sending the event</param>
+        /// <param name="e">event arguments</param>
+        public void processSkeletonFrame()
+        {
+            Skeleton[] skeletons = new Skeleton[0];
+
+            using (SkeletonFrame skeletonFrame = skelFrame)
+            {
+                if (skeletonFrame != null)
+                {
+                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                    skeletonFrame.CopySkeletonDataTo(skeletons);
+                }
+            }
+
+            using (DrawingContext dc = this.drawingGroup.Open())
+            {
+                if (this.colourImageSource != null)
+                {
+                    dc.DrawImage(this.colourImageSource, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                }
+                else
+                {
+                    // Draw a transparent background to set the render size
+                    dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                }
+
+                if (skeletons.Length != 0)
+                {
+                    foreach (Skeleton skel in skeletons)
+                    {
+                        RenderClippedEdges(skel, dc);
+
+                        if (skel.TrackingState == SkeletonTrackingState.Tracked)
+                        {
+                            this.DrawBonesAndJoints(skel, dc);
+                            this.skeletonOut = skel;
+                            this.measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
+                        }
+                        else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
+                        {
+                            dc.DrawEllipse(
+                            this.centerPointBrush,
+                            null,
+                            this.SkeletonPointToScreen(skel.Position),
+                            BodyCenterThickness,
+                            BodyCenterThickness);
+                        }
+                    }
                 }
 
                 // prevent drawing outside of our render area
