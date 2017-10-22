@@ -241,7 +241,15 @@ namespace ColourSkel
         /// </summary>
         private void LiveMeasure()
         {
-            this.measureBarText.Text = skelObj.getMeasurements();
+            //this.measureBarText.Text = skelObj.getMeasurements();
+            if (skelObj != null && skelObj.isEmpty() == false)
+            {
+                this.measureBarText.Text = skelObj.getBodyMeasurements();
+            }
+            else
+            {
+                this.measureBarText.Text = "No skeleton ready yet";
+            }
         }
 
         /// <summary>
@@ -385,11 +393,13 @@ namespace ColourSkel
                              stride, 
                              0);
                         skelObj.setPixelArray(bitmapArray, stride);
-                        
-                        skelObj.SkeletonStart(this.foregroundBitmap, this.sensorChooser.Kinect);
+
+                        skelObj.setActiveKinectSensor(this.sensorChooser.Kinect);
 
                         skelObj.populateDepthAndSkelPoints(colourFrameIn, ColorImageFormat.RgbResolution640x480Fps30, DepthImageFormat.Resolution320x240Fps30, 240, 320, 480, 640);
-
+                        
+                        skelObj.SkeletonStart(this.foregroundBitmap);
+ 
                         // Set the image we display to point to the bitmap where we'll put the image data
                         this.Image.Source = skelObj.getOutputImage();
                     }

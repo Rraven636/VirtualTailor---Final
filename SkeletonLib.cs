@@ -90,7 +90,7 @@ namespace ColourSkel
         /// <summary>
         /// Skeleton to be used to measure
         /// </summary>
-        private Skeleton skeletonOut;
+        private Skeleton _skeletonOut;
 
         /// <summary>
         /// Variable holding measurement reading
@@ -111,6 +111,11 @@ namespace ColourSkel
         private DepthImagePixel[] depthImageMeasure;
 
         private SkeletonPoint[] skelPointsMeasure;
+
+        private int colourFormatHeight, colourFormatWidth, depthFormatHeight, depthFormatWidth;
+
+        private Measure totalMeasure;
+
 
         public SkeletonLib()
         {
@@ -279,7 +284,7 @@ namespace ColourSkel
             this.imageSource = new DrawingImage(this.drawingGroup);
         }
 
-        public void SkeletonStart (WriteableBitmap colourImg, KinectSensor sensorIn)
+        public void SkeletonStart (WriteableBitmap colourImg)
         {
             if (skelFrame == null)
             {
@@ -290,8 +295,6 @@ namespace ColourSkel
 
             // Create an image source that we can use in our image control
             this.imageSource = new DrawingImage(this.drawingGroup);
-
-            setActiveKinectSensor(sensorIn);
 
             // Set the input image to the passed in image parameter
             setColourImage(colourImg);
@@ -357,12 +360,14 @@ namespace ColourSkel
             }
         }
 
-
-
         public void populateDepthAndSkelPoints(ColorImageFrame cFrame, ColorImageFormat cFormat, DepthImageFormat dFormat, int depthHeight, int depthWidth, int colourHeight, int colourWidth)
         {
-            this.depthImageMeasure = new DepthImagePixel[depthHeight*depthWidth];
-            this.skelPointsMeasure = new SkeletonPoint[colourHeight*colourWidth];
+            this.colourFormatHeight = colourHeight;
+            this.colourFormatWidth = colourWidth;
+            this.depthFormatHeight = depthHeight;
+            this.depthFormatWidth = depthWidth;
+            this.depthImageMeasure = new DepthImagePixel[depthFormatHeight*depthFormatWidth];
+            this.skelPointsMeasure = new SkeletonPoint[colourFormatHeight*colourFormatWidth];
             this.sensor.CoordinateMapper.MapColorFrameToSkeletonFrame(cFormat, dFormat, depthImageMeasure, skelPointsMeasure);            
         }
 
@@ -371,11 +376,11 @@ namespace ColourSkel
             SkeletonPoint skelPoint = new SkeletonPoint();
             int yValue = (int)imagePoint.Y;
             int xValue = (int)imagePoint.X;
-            if (yValue > colourImageSource.PixelHeight || xValue > colourImageSource.PixelWidth || yValue < 0 || xValue < 0)
+            if (yValue > this.colourFormatHeight || xValue > this.colourFormatWidth || yValue < 0 || xValue < 0)
             {
                 return skelPoint;
             }
-            int arrayVal = yValue * this.foregroundStride + xValue;
+            int arrayVal = yValue * this.colourFormatWidth + xValue;
             return this.skelPointsMeasure[arrayVal];
         }
 
@@ -430,9 +435,9 @@ namespace ColourSkel
             Point endJointPos = this.SkeletonPointToScreen(joint1.Position);
             drawingContext.DrawLine(drawPen, startJointPos, endJointPos);
             
-            if(jointType0.Equals(JointType.ShoulderLeft) || jointType1.Equals(JointType.ShoulderLeft))
+            if(jointType0.Equals(JointType.ElbowLeft) || jointType1.Equals(JointType.ElbowLeft))
             {
-                DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos);
+                DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos, jointType0, jointType1);
             }
             
             //DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos);
@@ -445,17 +450,25 @@ namespace ColourSkel
         /// <param name="drawingContext">drawing context to draw to</param>
         /// <param name="jointType0">joint to start the reference line from</param>
         /// <param name="jointType1">joint to end the refernece line at</param>
-        public void DrawPerpLine(Skeleton skeleton, DrawingContext drawingContext, Point startPoint, Point endPoint)
+        public void DrawPerpLine(Skeleton skeleton, DrawingContext drawingContext, Point startPoint, Point endPoint, JointType jointType1, JointType jointType2)
         {
-            Measure measureObj = new Measure(skeleton);
-            var perpGrad = measureObj.perpendicularGrad(startPoint, endPoint);
-            var midPoint = measureObj.midpoint(startPoint, endPoint);
+            //Measure measureObj = new Measure(skeleton);
+            var perpGrad = totalMeasure.perpendicularGrad(startPoint, endPoint);
+            var midPoint = totalMeasure.midpoint(startPoint, endPoint);
             //Point startPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)startPoint.X);
             //Point endPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)endPoint.X);
-            Point startPerpPoint = getStartPoint(measureObj, midPoint, perpGrad);
-            Point endPerpPoint = getEndPoint(measureObj, midPoint, perpGrad);
+            Point startPerpPoint = getStartPoint(totalMeasure, midPoint, perpGrad);
+            Point endPerpPoint = getEndPoint(totalMeasure, midPoint, perpGrad);
+            addMeasurement(totalMeasure, startPerpPoint, endPerpPoint, jointType1, jointType2);
             Pen drawPen = this.perpLineTrackedBone;
             drawingContext.DrawLine(drawPen, startPerpPoint, endPerpPoint);
+        }
+
+        public void addMeasurement(Measure measureObj, Point point1, Point point2, JointType jointType1, JointType jointType2)
+        {
+            SkeletonPoint skelPoint1 = getSkelPointFromPoint(point1);
+            SkeletonPoint skelPoint2 = getSkelPointFromPoint(point2);
+            totalMeasure.addMeasurement(skelPoint1, skelPoint2, jointType1, jointType2);
         }
 
         public Point getStartPoint(Measure measObj, Point midpoint, float perpGrad)
@@ -619,7 +632,7 @@ namespace ColourSkel
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
                         {
                             this.DrawBonesAndJoints(skel, dc);
-                            this.skeletonOut = skel;
+                            _skeletonOut = skel;
                             this.measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
                         }
                         else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
@@ -666,8 +679,9 @@ namespace ColourSkel
 
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
                         {
+                            _skeletonOut = skel;
+                            totalMeasure = new Measure(_skeletonOut);
                             this.DrawBonesAndJoints(skel, dc);
-                            this.skeletonOut = skel;
                             this.measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
                         }
                         else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
@@ -694,7 +708,7 @@ namespace ColourSkel
 
         public Skeleton getSkeletonOut()
         {
-            return this.skeletonOut;
+            return _skeletonOut;
         }
 
         public SkeletonFrame getSkeletonFrameOut()
@@ -704,14 +718,28 @@ namespace ColourSkel
 
         public void measureJoints(JointType jointType1, JointType jointType2)
         {
-            Joint joint1 = this.skeletonOut.Joints[jointType1];
-            Joint joint2 = this.skeletonOut.Joints[jointType2];
+            Joint joint1 = _skeletonOut.Joints[jointType1];
+            Joint joint2 = _skeletonOut.Joints[jointType2];
 
             String output = "Between: " + jointType1.ToString() + " and " + jointType2.ToString();
-            Measure measureObj = new Measure(this.skeletonOut);
+            Measure measureObj = new Measure(_skeletonOut);
             output += " - " + measureObj.distanceJoints(joint1, joint2);
 
             this.measureOut = output;
+        }
+
+        public String getBodyMeasurements()
+        {
+            String output = "All measurements - ";
+            if (totalMeasure != null)
+            {
+                output += totalMeasure.toStringArmLeftLower() + " " + totalMeasure.toStringArmLeftUpper();
+            }
+            else
+            {
+                output += "None available yet";
+            }
+            return output;
         }
 
         public String getMeasurements()

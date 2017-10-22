@@ -15,20 +15,24 @@ namespace ColourSkel
         /// <summary>
         /// Skeleton to be used to measure
         /// </summary>
-        Skeleton skeletonIn;
+        Skeleton _skeletonIn;
 
-        private double armLeftUpper;
+        private double _armLeftUpper;
 
-        private double armLeftLower;
+        private double _armLeftLower;
 
         public Measure()
         {
-            this.skeletonIn = null;
+            _skeletonIn = null;
+            _armLeftUpper = 0;
+            _armLeftLower = 0;
         }
 
         public Measure(Skeleton tempSkel)
         {
-            this.skeletonIn = tempSkel;
+            _skeletonIn = tempSkel;
+            _armLeftUpper = 0;
+            _armLeftLower = 0;
         }
 
         public double distanceSkelPoint(SkeletonPoint p1, SkeletonPoint p2)
@@ -68,11 +72,45 @@ namespace ColourSkel
             var finalY = (int)Math.Round(outY);
             return new Point(xPos, finalY);
         }
-        /*
-        public double distance(float num11, float num12, float num13, float num21, float num22, float num23)
+        
+        public void addMeasurement(SkeletonPoint skelPoint1, SkeletonPoint skelPoint2, JointType jointType1, JointType jointType2)
         {
-
+            double measurement = distanceSkelPoint(skelPoint1, skelPoint2);
+            if (jointType1.Equals(JointType.ShoulderLeft))
+            {
+                if (jointType2.Equals(JointType.ElbowLeft))
+                {
+                    _armLeftUpper = measurement;
+                }
+            }
+            if (jointType1.Equals(JointType.ElbowLeft))
+            {
+                if (jointType2.Equals(JointType.WristLeft))
+                {
+                    _armLeftLower = measurement;
+                }
+            }
         }
-        */
+
+        public double getArmLeftUpper()
+        {
+            return _armLeftUpper;
+        }
+
+        public double getArmLeftLower()
+        {
+            return _armLeftLower;
+        }
+
+        public String toStringArmLeftUpper()
+        {
+            return "Upper Left Arm: " + getArmLeftUpper();
+        }
+
+        public String toStringArmLeftLower()
+        {
+            return "Lower Left Arm: " + getArmLeftLower();
+        }
+
     }
 }
