@@ -10,7 +10,7 @@ using Microsoft.Kinect;
 
 namespace ColourSkel
 {
-    class Measure
+    public class Measure
     {
         /// <summary>
         /// Skeleton to be used to measure

@@ -10,7 +10,7 @@ using Microsoft.Kinect;
 
 namespace ColourSkel
 {
-    class SkeletonLib
+    public class SkeletonLib
     {        
         /// <summary>
         /// Width of output drawing
@@ -373,6 +373,12 @@ namespace ColourSkel
             Point startJointPos = this.SkeletonPointToScreen(joint0.Position);
             Point endJointPos = this.SkeletonPointToScreen(joint1.Position);
             drawingContext.DrawLine(drawPen, startJointPos, endJointPos);
+            /*
+            if(jointType0.Equals(JointType.ShoulderLeft) || jointType1.Equals(JointType.ShoulderLeft))
+            {
+                DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos);
+            }
+            */
             DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos);
         }
 
