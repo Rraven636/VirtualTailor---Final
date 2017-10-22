@@ -184,7 +184,34 @@ namespace ColourSkel
             this.foregroundArray = new byte[Pixels.Length];
             for(int i = 0; i < Pixels.Length; i++)
             {
-                foregroundArray[i] = Pixels[i];
+                if (Pixels[i] == 0)
+                {
+                    int previousZero = i - 4;
+                    int temp = i-1;
+                    if (previousZero < 0)
+                    {
+                        while(temp >= 0)
+                        {
+                            foregroundArray[temp] = 0;
+                            temp--;
+                        }
+                    }
+                    else
+                    {
+                        if (Pixels[previousZero] == 0)
+                        {
+                            while (temp > previousZero)
+                            {
+                                foregroundArray[temp] = 0;
+                                temp--;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foregroundArray[i] = Pixels[i];
+                }
             }
             this.foregroundStride = strideIn;
         }
@@ -410,21 +437,41 @@ namespace ColourSkel
             Point potentialStart = midpoint;
             int loopCount = 1;
 
-            while (loopCount <= 10)
+            while (potentialStart.X > 0 && potentialStart.Y > 0 && potentialStart.X < colourImageSource.PixelWidth && potentialStart.Y < colourImageSource.PixelHeight)
             {
-                int xValue = (int)midpoint.X - loopCount * 10;
+                //int xValue = (int)midpoint.X - loopCount * 10;
+                int xValue = (int)midpoint.X - loopCount;
                 potentialStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
                 byte pixelAtPoint = getPixelValue(potentialStart);
                 if(pixelAtPoint == 0)
                 {
-                    break;
+                    int tempXValue = xValue;
+                    Boolean check = true;
+                    Point tempStart = potentialStart;
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        tempXValue--;
+                        tempStart = measObj.getNewPoint(midpoint, perpGrad, tempXValue);
+                        byte tempPixelAtPoint = getPixelValue(tempStart);
+                        if (tempPixelAtPoint != 0)
+                        {
+                            check = false;
+                            break;
+                        }
+                    }
+                    if (check == true)
+                    {
+                        potentialStart = tempStart;
+                        break;
+                    }                    
                 }
                 loopCount++;
             }
 
             Point fineStart = potentialStart;
+            /*
             int loopCount2 = 1;
-            while (loopCount2 < 10)
+            while (potentialStart.X > 0 && potentialStart.Y > 0 && potentialStart.X < colourImageSource.PixelWidth && potentialStart.Y < colourImageSource.PixelHeight)
             {
                 int xValue = (int)potentialStart.X + loopCount2;
                 fineStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
@@ -435,6 +482,7 @@ namespace ColourSkel
                 }
                 loopCount2++;
             }
+            */
 
             return fineStart;
         }
@@ -444,21 +492,41 @@ namespace ColourSkel
             Point potentialStart = midpoint;
             int loopCount = 1;
 
-            while (loopCount <= 10)
+            while (potentialStart.X > 0 && potentialStart.Y > 0 && potentialStart.X < colourImageSource.PixelWidth && potentialStart.Y < colourImageSource.PixelHeight)
             {
-                int xValue = (int)midpoint.X + loopCount * 10;
+                //int xValue = (int)midpoint.X + loopCount * 10;
+                int xValue = (int)midpoint.X + loopCount;
                 potentialStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
                 byte pixelAtPoint = getPixelValue(potentialStart);
                 if (pixelAtPoint == 0)
                 {
-                    break;
+                    int tempXValue = xValue;
+                    Boolean check = true;
+                    Point tempStart = potentialStart;
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        tempXValue++;
+                        tempStart = measObj.getNewPoint(midpoint, perpGrad, tempXValue);
+                        byte tempPixelAtPoint = getPixelValue(tempStart);
+                        if (tempPixelAtPoint != 0)
+                        {
+                            check = false;
+                            break;
+                        }
+                    }
+                    if (check == true)
+                    {
+                        potentialStart = tempStart;
+                        break;
+                    }
                 }
                 loopCount++;
             }
 
             Point fineStart = potentialStart;
+            /*
             int loopCount2 = 1;
-            while (loopCount2 < 10)
+            while (potentialStart.X > 0 && potentialStart.Y > 0 && potentialStart.X < colourImageSource.PixelWidth && potentialStart.Y < colourImageSource.PixelHeight)
             {
                 int xValue = (int)potentialStart.X - loopCount2;
                 fineStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
@@ -469,12 +537,19 @@ namespace ColourSkel
                 }
                 loopCount2++;
             }
+            */
 
             return fineStart;
         }
 
         public byte getPixelValue(Point point)
         {
+            int yValue = (int)point.Y;
+            int xValue = (int)point.X;
+            if (yValue > colourImageSource.PixelHeight || xValue > colourImageSource.PixelWidth || yValue < 0 || xValue < 0)
+            {
+                return 0;
+            }
             int arrayVal = (int)point.Y * this.foregroundStride + (int)point.X;
             return this.foregroundArray[arrayVal];
         }
