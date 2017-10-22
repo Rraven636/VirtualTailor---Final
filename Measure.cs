@@ -17,6 +17,10 @@ namespace ColourSkel
         /// </summary>
         Skeleton skeletonIn;
 
+        private double armLeftUpper;
+
+        private double armLeftLower;
+
         public Measure()
         {
             this.skeletonIn = null;

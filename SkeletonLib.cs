@@ -108,6 +108,10 @@ namespace ColourSkel
 
         private int foregroundStride;
 
+        private DepthImagePixel[] depthImageMeasure;
+
+        private SkeletonPoint[] skelPointsMeasure;
+
         public SkeletonLib()
         {
             this.RenderWidth = 0;
@@ -351,6 +355,28 @@ namespace ColourSkel
                     drawingContext.DrawEllipse(drawBrush, null, this.SkeletonPointToScreen(joint.Position), JointThickness, JointThickness);
                 }
             }
+        }
+
+
+
+        public void populateDepthAndSkelPoints(ColorImageFrame cFrame, ColorImageFormat cFormat, DepthImageFormat dFormat, int depthHeight, int depthWidth, int colourHeight, int colourWidth)
+        {
+            this.depthImageMeasure = new DepthImagePixel[depthHeight*depthWidth];
+            this.skelPointsMeasure = new SkeletonPoint[colourHeight*colourWidth];
+            this.sensor.CoordinateMapper.MapColorFrameToSkeletonFrame(cFormat, dFormat, depthImageMeasure, skelPointsMeasure);            
+        }
+
+        private SkeletonPoint getSkelPointFromPoint(Point imagePoint)
+        {
+            SkeletonPoint skelPoint = new SkeletonPoint();
+            int yValue = (int)imagePoint.Y;
+            int xValue = (int)imagePoint.X;
+            if (yValue > colourImageSource.PixelHeight || xValue > colourImageSource.PixelWidth || yValue < 0 || xValue < 0)
+            {
+                return skelPoint;
+            }
+            int arrayVal = yValue * this.foregroundStride + xValue;
+            return this.skelPointsMeasure[arrayVal];
         }
 
         /// <summary>

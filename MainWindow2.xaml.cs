@@ -87,7 +87,9 @@ namespace ColourSkel
         /// </summary>
         private BackgroundRemovalLib backgroundObj;
 
-        private SkeletonFrame skelFrame;
+        private ColorImageFrame colourFrameIn;
+
+        private DepthImageFrame depthFrameIn;
 
         public MainWindow()
         {
@@ -313,6 +315,7 @@ namespace ColourSkel
                     if (null != depthFrame)
                     {
                         this.backgroundRemovedColorStream.ProcessDepth(depthFrame.GetRawPixelData(), depthFrame.Timestamp);
+                        this.depthFrameIn = depthFrame;
                     }
                 }
 
@@ -321,6 +324,7 @@ namespace ColourSkel
                     if (null != colorFrame)
                     {
                         this.backgroundRemovedColorStream.ProcessColor(colorFrame.GetRawPixelData(), colorFrame.Timestamp);
+                        this.colourFrameIn = colorFrame;
                     }
                 }
 
@@ -383,6 +387,8 @@ namespace ColourSkel
                         skelObj.setPixelArray(bitmapArray, stride);
                         
                         skelObj.SkeletonStart(this.foregroundBitmap, this.sensorChooser.Kinect);
+
+                        skelObj.populateDepthAndSkelPoints(colourFrameIn, ColorImageFormat.RgbResolution640x480Fps30, DepthImageFormat.Resolution320x240Fps30, 240, 320, 480, 640);
 
                         // Set the image we display to point to the bitmap where we'll put the image data
                         this.Image.Source = skelObj.getOutputImage();
