@@ -106,6 +106,8 @@ namespace ColourSkel
 
         private byte[] foregroundArray;
 
+        private int foregroundStride;
+
         public SkeletonLib()
         {
             this.RenderWidth = 0;
@@ -177,13 +179,14 @@ namespace ColourSkel
             this.sensor = sensorIn;
         }
 
-        public void setPixelArray(byte[] Pixels)
+        public void setPixelArray(byte[] Pixels, int strideIn)
         {
             this.foregroundArray = new byte[Pixels.Length];
             for(int i = 0; i < Pixels.Length; i++)
             {
                 foregroundArray[i] = Pixels[i];
             }
+            this.foregroundStride = strideIn;
         }
 
         /// <summary>
@@ -373,13 +376,13 @@ namespace ColourSkel
             Point startJointPos = this.SkeletonPointToScreen(joint0.Position);
             Point endJointPos = this.SkeletonPointToScreen(joint1.Position);
             drawingContext.DrawLine(drawPen, startJointPos, endJointPos);
-            /*
+            
             if(jointType0.Equals(JointType.ShoulderLeft) || jointType1.Equals(JointType.ShoulderLeft))
             {
                 DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos);
             }
-            */
-            DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos);
+            
+            //DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos);
         }
 
         /// <summary>
@@ -472,7 +475,7 @@ namespace ColourSkel
 
         public byte getPixelValue(Point point)
         {
-            int arrayVal = (int)point.Y * 255 + (int)point.X;
+            int arrayVal = (int)point.Y * this.foregroundStride + (int)point.X;
             return this.foregroundArray[arrayVal];
         }
 

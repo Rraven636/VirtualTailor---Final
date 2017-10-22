@@ -373,14 +373,14 @@ namespace ColourSkel
                     
                     if (skelObj.isEmpty() == false)
                     {
-                        
-                        byte[] bitmapArray = new byte[foregroundBitmap.PixelHeight * foregroundBitmap.PixelWidth];
-                        this.foregroundBitmap.CopyPixels(
-                             new Int32Rect(0, 0, this.foregroundBitmap.PixelWidth, this.foregroundBitmap.PixelHeight), 
+
+                        int stride = (int)((foregroundBitmap.PixelWidth * foregroundBitmap.Format.BitsPerPixel + 7) / 8);
+                        byte[] bitmapArray = new byte[foregroundBitmap.PixelHeight * stride];
+                        this.foregroundBitmap.CopyPixels(                             
                              bitmapArray, 
-                             this.foregroundBitmap.PixelWidth * sizeof(int), 
+                             stride, 
                              0);
-                        skelObj.setPixelArray(bitmapArray);
+                        skelObj.setPixelArray(bitmapArray, stride);
                         
                         skelObj.SkeletonStart(this.foregroundBitmap, this.sensorChooser.Kinect);
 
