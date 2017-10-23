@@ -29,64 +29,64 @@ namespace ColourSkel
         /// <summary>
         /// Format we will use for the depth stream
         /// </summary>
-        private const DepthImageFormat DepthFormat = DepthImageFormat.Resolution640x480Fps30;
+        private const DepthImageFormat _DepthFormat = DepthImageFormat.Resolution640x480Fps30;
 
         /// <summary>
         /// Format we will use for the color stream
         /// </summary>
-        private const ColorImageFormat ColorFormat = ColorImageFormat.RgbResolution640x480Fps30;
+        private const ColorImageFormat _ColorFormat = ColorImageFormat.RgbResolution640x480Fps30;
 
         /// <summary>
         /// Bitmap that will hold color information from BackgroundRemovedStream and sent to SkeletonLib for processing
         /// </summary>
-        private WriteableBitmap foregroundBitmap;
+        private WriteableBitmap _foregroundBitmap;
 
         /// <summary>
         /// Our core library which does background 
         /// </summary>
-        private BackgroundRemovedColorStream backgroundRemovedColorStream;
+        private BackgroundRemovedColorStream _backgroundRemovedColorStream;
 
         /// <summary>
         /// Intermediate storage for the skeleton data received from the sensor
         /// </summary>
-        private Skeleton[] skeletons;
+        private Skeleton[] _skeletons;
 
         /// <summary>
         /// the skeleton that is currently tracked by the app
         /// </summary>
-        private int currentlyTrackedSkeletonId;
+        private int _currentlyTrackedSkeletonId;
 
         /// <summary>
         /// Track whether Dispose has been called
         /// </summary>
-        private bool disposed;
+        private bool _disposed;
         /////////////////////////////////////////////////////////////////////////
 
         /// <summary>
         /// Active Kinect sensor
         /// </summary>
-        private KinectSensorChooser sensorChooser;
+        private KinectSensorChooser _sensorChooser;
 
         /// <summary>
         /// Object to handle skeleton operations
         /// </summary>
-        private SkeletonLib skelObj;
+        private SkeletonLib _skelObj;
 
-        private ColorImageFrame colourFrameIn;
+        private ColorImageFrame _colourFrameIn;
 
-        private DepthImageFrame depthFrameIn;
+        private DepthImageFrame _depthFrameIn;
 
-        private String measurementsStringOutput = "Still starting up";
+        private String _measurementsStringOutput = "Still starting up";
 
         public MainWindow()
         {
             InitializeComponent();
 
             // Initialize the sensor chooser and UI
-            this.sensorChooser = new KinectSensorChooser();
-            this.sensorChooserUi.KinectSensorChooser = this.sensorChooser;
-            this.sensorChooser.KinectChanged += this.SensorChooserOnKinectChanged;
-            this.sensorChooser.Start();
+            _sensorChooser = new KinectSensorChooser();
+            this.sensorChooserUi.KinectSensorChooser = _sensorChooser;
+            _sensorChooser.KinectChanged += this.SensorChooserOnKinectChanged;
+            _sensorChooser.Start();
         }
 
         /// <summary>
@@ -115,22 +115,22 @@ namespace ColourSkel
         /// <param name="disposing">Whether the function was called from Dispose.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!_disposed)
             {
-                if (null != this.backgroundRemovedColorStream)
+                if (null != _backgroundRemovedColorStream)
                 {
-                    this.backgroundRemovedColorStream.Dispose();
-                    this.backgroundRemovedColorStream = null;
+                    _backgroundRemovedColorStream.Dispose();
+                    _backgroundRemovedColorStream = null;
                 }
 
-                this.disposed = true;
+                _disposed = true;
             }
         }
 
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            this.sensorChooser.Stop();
-            this.sensorChooser = null;
+            _sensorChooser.Stop();
+            _sensorChooser = null;
         }
         
         /// <summary>
@@ -139,9 +139,9 @@ namespace ColourSkel
         private void LiveMeasure()
         {
             //this.measureBarText.Text = skelObj.getMeasurements();
-            if (skelObj != null && skelObj.isEmpty() == false)
+            if (_skelObj != null && _skelObj.isEmpty() == false)
             {
-                this.measureBarText.Text = measurementsStringOutput;
+                this.measureBarText.Text = _measurementsStringOutput;
             }
             else
             {
@@ -167,22 +167,22 @@ namespace ColourSkel
         private void SensorAllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
             // in the middle of shutting down, or lingering events from previous sensor, do nothing here.
-            if (null == this.sensorChooser || null == this.sensorChooser.Kinect || this.sensorChooser.Kinect != sender)
+            if (null == _sensorChooser || null == _sensorChooser.Kinect || _sensorChooser.Kinect != sender)
             {
                 return;
             }
 
             try
             {
-                skelObj = new SkeletonLib();
+                _skelObj = new SkeletonLib();
 
                 using (var depthFrame = e.OpenDepthImageFrame())
                 {
                     if (null != depthFrame)
                     {
-                        this.backgroundRemovedColorStream.ProcessDepth(depthFrame.GetRawPixelData(), depthFrame.Timestamp);
-                        this.depthFrameIn = depthFrame;
-                        skelObj.setDepthFrame(depthFrame, 480, 640);
+                        _backgroundRemovedColorStream.ProcessDepth(depthFrame.GetRawPixelData(), depthFrame.Timestamp);
+                        _depthFrameIn = depthFrame;
+                        _skelObj.setDepthFrame(depthFrame, 480, 640);
                     }
                 }
 
@@ -190,9 +190,9 @@ namespace ColourSkel
                 {
                     if (null != colorFrame)
                     {
-                        this.backgroundRemovedColorStream.ProcessColor(colorFrame.GetRawPixelData(), colorFrame.Timestamp);
-                        this.colourFrameIn = colorFrame;
-                        skelObj.setColourFrame(colorFrame, 480, 640);
+                        _backgroundRemovedColorStream.ProcessColor(colorFrame.GetRawPixelData(), colorFrame.Timestamp);
+                        _colourFrameIn = colorFrame;
+                        _skelObj.setColourFrame(colorFrame, 480, 640);
                     }
                 }
 
@@ -200,9 +200,9 @@ namespace ColourSkel
                 {
                     if (null != skeletonFrame)
                     {
-                        skeletonFrame.CopySkeletonDataTo(this.skeletons);
-                        this.backgroundRemovedColorStream.ProcessSkeleton(this.skeletons, skeletonFrame.Timestamp);
-                        skelObj.setSkeletonFrame(skeletonFrame);
+                        skeletonFrame.CopySkeletonDataTo(_skeletons);
+                        _backgroundRemovedColorStream.ProcessSkeleton(_skeletons, skeletonFrame.Timestamp);
+                        _skelObj.setSkeletonFrame(skeletonFrame);
                     }
                 }
 
@@ -226,47 +226,47 @@ namespace ColourSkel
             {
                 if (backgroundRemovedFrame != null)
                 {
-                    if (null == this.foregroundBitmap || this.foregroundBitmap.PixelWidth != backgroundRemovedFrame.Width
-                        || this.foregroundBitmap.PixelHeight != backgroundRemovedFrame.Height)
+                    if (null == _foregroundBitmap || _foregroundBitmap.PixelWidth != backgroundRemovedFrame.Width
+                        || _foregroundBitmap.PixelHeight != backgroundRemovedFrame.Height)
                     {
-                        this.foregroundBitmap = new WriteableBitmap(backgroundRemovedFrame.Width, backgroundRemovedFrame.Height, 96.0, 96.0, PixelFormats.Bgra32, null);
+                        _foregroundBitmap = new WriteableBitmap(backgroundRemovedFrame.Width, backgroundRemovedFrame.Height, 96.0, 96.0, PixelFormats.Bgra32, null);
                         
                     }
 
                     // Write the pixel data into our bitmap
-                    this.foregroundBitmap.WritePixels(
-                        new Int32Rect(0, 0, this.foregroundBitmap.PixelWidth, this.foregroundBitmap.PixelHeight),
+                    _foregroundBitmap.WritePixels(
+                        new Int32Rect(0, 0, _foregroundBitmap.PixelWidth, _foregroundBitmap.PixelHeight),
                         backgroundRemovedFrame.GetRawPixelData(),
-                        this.foregroundBitmap.PixelWidth * sizeof(int),
+                        _foregroundBitmap.PixelWidth * sizeof(int),
                         0);
                     
-                    if (skelObj.isEmpty() == false)
+                    if (_skelObj.isEmpty() == false)
                     {
 
-                        int stride = (int)((foregroundBitmap.PixelWidth * foregroundBitmap.Format.BitsPerPixel + 7) / 8);
-                        byte[] bitmapArray = new byte[foregroundBitmap.PixelHeight * stride];
-                        this.foregroundBitmap.CopyPixels(                             
+                        int stride = (int)((_foregroundBitmap.PixelWidth * _foregroundBitmap.Format.BitsPerPixel + 7) / 8);
+                        byte[] bitmapArray = new byte[_foregroundBitmap.PixelHeight * stride];
+                        _foregroundBitmap.CopyPixels(                             
                              bitmapArray, 
                              stride, 
                              0);
-                        skelObj.setPixelArray(bitmapArray, stride);
+                        _skelObj.setPixelArray(bitmapArray, stride);
 
-                        skelObj.setActiveKinectSensor(this.sensorChooser.Kinect);
+                        _skelObj.setActiveKinectSensor(_sensorChooser.Kinect);
 
-                        skelObj.populateDepthAndSkelPoints(colourFrameIn, depthFrameIn, ColorFormat, DepthFormat, 480, 640, 480, 640);
+                        _skelObj.populateDepthAndSkelPoints(_colourFrameIn, _depthFrameIn, _ColorFormat, _DepthFormat, 480, 640, 480, 640);
                         
-                        skelObj.SkeletonStart(this.foregroundBitmap);
+                        _skelObj.SkeletonStart(_foregroundBitmap);
  
                         // Set the image we display to point to the bitmap where we'll put the image data
-                        this.Image.Source = skelObj.getOutputImage();
+                        this.Image.Source = _skelObj.getOutputImage();
 
                         // Set the output string to the most recent body measurements obtained
-                        measurementsStringOutput = skelObj.getBodyMeasurements();
+                        _measurementsStringOutput = _skelObj.getBodyMeasurements();
                     }
                     else
                     {
                         // Set the image we display to point to the bitmap where we'll put the image data
-                        this.Image.Source = this.foregroundBitmap;
+                        this.Image.Source = _foregroundBitmap;
                     }
                 }
             }
@@ -283,7 +283,7 @@ namespace ColourSkel
             var nearestDistance = float.MaxValue;
             var nearestSkeleton = 0;
 
-            foreach (var skel in this.skeletons)
+            foreach (var skel in _skeletons)
             {
                 if (null == skel)
                 {
@@ -295,7 +295,7 @@ namespace ColourSkel
                     continue;
                 }
 
-                if (skel.TrackingId == this.currentlyTrackedSkeletonId)
+                if (skel.TrackingId == _currentlyTrackedSkeletonId)
                 {
                     isTrackedSkeltonVisible = true;
                     break;
@@ -310,8 +310,8 @@ namespace ColourSkel
 
             if (!isTrackedSkeltonVisible && nearestSkeleton != 0)
             {
-                this.backgroundRemovedColorStream.SetTrackedPlayer(nearestSkeleton);
-                this.currentlyTrackedSkeletonId = nearestSkeleton;
+                _backgroundRemovedColorStream.SetTrackedPlayer(nearestSkeleton);
+                _currentlyTrackedSkeletonId = nearestSkeleton;
             }
         }
         
@@ -332,11 +332,11 @@ namespace ColourSkel
                     args.OldSensor.SkeletonStream.Disable();
 
                     // Create the background removal stream to process the data and remove background, and initialize it.
-                    if (null != this.backgroundRemovedColorStream)
+                    if (null != _backgroundRemovedColorStream)
                     {
-                        this.backgroundRemovedColorStream.BackgroundRemovedFrameReady -= this.BackgroundRemovedFrameReadyHandler;
-                        this.backgroundRemovedColorStream.Dispose();
-                        this.backgroundRemovedColorStream = null;
+                        _backgroundRemovedColorStream.BackgroundRemovedFrameReady -= this.BackgroundRemovedFrameReadyHandler;
+                        _backgroundRemovedColorStream.Dispose();
+                        _backgroundRemovedColorStream = null;
                     }
                 }
                 catch (InvalidOperationException)
@@ -350,22 +350,22 @@ namespace ColourSkel
             {
                 try
                 {
-                    args.NewSensor.DepthStream.Enable(DepthFormat);
-                    args.NewSensor.ColorStream.Enable(ColorFormat);
+                    args.NewSensor.DepthStream.Enable(_DepthFormat);
+                    args.NewSensor.ColorStream.Enable(_ColorFormat);
                     args.NewSensor.SkeletonStream.Enable();
 
-                    this.backgroundRemovedColorStream = new BackgroundRemovedColorStream(args.NewSensor);
-                    this.backgroundRemovedColorStream.Enable(ColorFormat, DepthFormat);
+                    _backgroundRemovedColorStream = new BackgroundRemovedColorStream(args.NewSensor);
+                    _backgroundRemovedColorStream.Enable(_ColorFormat, _DepthFormat);
 
                     // Allocate space to put the depth, color, and skeleton data we'll receive
-                    if (null == this.skeletons)
+                    if (null == _skeletons)
                     {
-                        this.skeletons = new Skeleton[args.NewSensor.SkeletonStream.FrameSkeletonArrayLength];
+                        _skeletons = new Skeleton[args.NewSensor.SkeletonStream.FrameSkeletonArrayLength];
                     }
 
                     // Add an event handler to be called when the background removed color frame is ready, so that we can
                     // composite the image and output to the app
-                    this.backgroundRemovedColorStream.BackgroundRemovedFrameReady += this.BackgroundRemovedFrameReadyHandler;
+                    _backgroundRemovedColorStream.BackgroundRemovedFrameReady += this.BackgroundRemovedFrameReadyHandler;
 
                     // Add an event handler to be called whenever there is new depth frame data
                     args.NewSensor.AllFramesReady += this.SensorAllFramesReady;
