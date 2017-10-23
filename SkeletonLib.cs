@@ -15,77 +15,77 @@ namespace ColourSkel
         /// <summary>
         /// Width of output drawing
         /// </summary>
-        private float RenderWidth = 640.0f;
+        private float _RenderWidth = 640.0f;
 
         /// <summary>
         /// Height of our output drawing
         /// </summary>
-        private float RenderHeight = 480.0f;
+        private float _RenderHeight = 480.0f;
 
         /// <summary>
         /// Thickness of drawn joint lines
         /// </summary>
-        private double JointThickness = 3;
+        private double _JointThickness = 3;
 
         /// <summary>
         /// Thickness of body center ellipse
         /// </summary>
-        private double BodyCenterThickness = 10;
+        private double _BodyCenterThickness = 10;
 
         /// <summary>
         /// Thickness of clip edge rectangles
         /// </summary>
-        private double ClipBoundsThickness = 10;
+        private double _ClipBoundsThickness = 10;
 
         /// <summary>
         /// Brush used to draw skeleton center point
         /// </summary>
-        private Brush centerPointBrush = Brushes.Blue;
+        private Brush _centerPointBrush = Brushes.Blue;
 
         /// <summary>
         /// Brush used for drawing joints that are currently tracked
         /// </summary>
-        private Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
+        private Brush _trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
 
         /// <summary>
         /// Brush used for drawing joints that are currently inferred
         /// </summary>        
-        private Brush inferredJointBrush = Brushes.Yellow;
+        private Brush _inferredJointBrush = Brushes.Yellow;
 
         /// <summary>
         /// Pen used for drawing bones that are currently tracked
         /// </summary>
-        private Pen trackedBonePen = new Pen(Brushes.Green, 6);
+        private Pen _trackedBonePen = new Pen(Brushes.Green, 6);
 
         /// <summary>
         /// Pen used for drawing bones that are currently inferred
         /// </summary>        
-        private Pen inferredBonePen = new Pen(Brushes.Gray, 1);
+        private Pen _inferredBonePen = new Pen(Brushes.Gray, 1);
 
         /// <summary>
         /// Pen used for drawing bones that are currently tracked
         /// </summary>
-        private Pen perpLineTrackedBone = new Pen(Brushes.Red, 3);
+        private Pen _perpLineTrackedBone = new Pen(Brushes.Red, 3);
 
         /// <summary>
         /// Active Kinect sensor
         /// </summary>
-        private KinectSensor sensor;
+        private KinectSensor _sensor;
 
         /// <summary>
         /// Drawing group for skeleton rendering output
         /// </summary>
-        private DrawingGroup drawingGroup;
+        private DrawingGroup _drawingGroup;
 
         /// <summary>
         /// Drawing image that we will display
         /// </summary>
-        private DrawingImage imageSource;
+        private DrawingImage _imageSource;
 
         /// <summary>
         /// Drawing image that we will display
         /// </summary>
-        private WriteableBitmap colourImageSource;
+        private WriteableBitmap _colourImageSource;
 
         /// <summary>
         /// Skeleton to be used to measure
@@ -95,7 +95,7 @@ namespace ColourSkel
         /// <summary>
         /// Variable holding measurement reading
         /// </summary>
-        private String measureOut;
+        private String _measureOut;
 
         /// <summary>
         /// The skeletonframe sent from a skeleton ready event
@@ -118,56 +118,56 @@ namespace ColourSkel
 
         private int _colourFormatHeight, _colourFormatWidth, _depthFormatHeight, _depthFormatWidth;
 
-        private Measure totalMeasure;
+        private Measure _totalMeasure;
 
-        private Measure lastTotalMeasure;
+        private Measure _lastTotalMeasure;
 
 
         public SkeletonLib()
         {
-            this.sensor = null;
+            _sensor = null;
             _skelFrame = null;
-            this.RenderWidth = 640.0f;
-            this.RenderHeight = 480.0f;
-            this.JointThickness = 3;
-            this.BodyCenterThickness = 10;
-            this.ClipBoundsThickness = 10;
-            this.centerPointBrush = Brushes.Blue;
-            this.trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
-            this.inferredJointBrush = Brushes.Yellow;
-            this.trackedBonePen = new Pen(Brushes.Green, 6);
-            this.inferredBonePen = new Pen(Brushes.Gray, 1);
+            _RenderWidth = 640.0f;
+            _RenderHeight = 480.0f;
+            _JointThickness = 3;
+            _BodyCenterThickness = 10;
+            _ClipBoundsThickness = 10;
+            _centerPointBrush = Brushes.Blue;
+            _trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
+            _inferredJointBrush = Brushes.Yellow;
+            _trackedBonePen = new Pen(Brushes.Green, 6);
+            _inferredBonePen = new Pen(Brushes.Gray, 1);
         }
 
         public SkeletonLib(KinectSensor sensor)
         {
-            this.sensor = sensor;
+            _sensor = sensor;
             _skelFrame = null;
-            this.RenderWidth = 640.0f;
-            this.RenderHeight = 480.0f;
-            this.JointThickness = 3;
-            this.BodyCenterThickness = 10;
-            this.ClipBoundsThickness = 10;
-            this.centerPointBrush = Brushes.Blue;
-            this.trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
-            this.inferredJointBrush = Brushes.Yellow;
-            this.trackedBonePen = new Pen(Brushes.Green, 6);
-            this.inferredBonePen = new Pen(Brushes.Gray, 1);
+            _RenderWidth = 640.0f;
+            _RenderHeight = 480.0f;
+            _JointThickness = 3;
+            _BodyCenterThickness = 10;
+            _ClipBoundsThickness = 10;
+            _centerPointBrush = Brushes.Blue;
+            _trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
+            _inferredJointBrush = Brushes.Yellow;
+            _trackedBonePen = new Pen(Brushes.Green, 6);
+            _inferredBonePen = new Pen(Brushes.Gray, 1);
         }
 
         public SkeletonLib(SkeletonFrame skelFrame)
-        {            
-            this.sensor = null;
-            this.RenderWidth = 640.0f;
-            this.RenderHeight = 480.0f;
-            this.JointThickness = 3;
-            this.BodyCenterThickness = 10;
-            this.ClipBoundsThickness = 10;
-            this.centerPointBrush = Brushes.Blue;
-            this.trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
-            this.inferredJointBrush = Brushes.Yellow;
-            this.trackedBonePen = new Pen(Brushes.Green, 6);
-            this.inferredBonePen = new Pen(Brushes.Gray, 1);
+        {
+            _sensor = null;
+            _RenderWidth = 640.0f;
+            _RenderHeight = 480.0f;
+            _JointThickness = 3;
+            _BodyCenterThickness = 10;
+            _ClipBoundsThickness = 10;
+            _centerPointBrush = Brushes.Blue;
+            _trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
+            _inferredJointBrush = Brushes.Yellow;
+            _trackedBonePen = new Pen(Brushes.Green, 6);
+            _inferredBonePen = new Pen(Brushes.Gray, 1);
 
             setSkeletonFrame(skelFrame);
         }
@@ -208,12 +208,12 @@ namespace ColourSkel
         /// <param name="img"></param>
         public void setColourImage(WriteableBitmap img)
         {
-            this.colourImageSource = img;
+            _colourImageSource = img;
         }
 
         public void setActiveKinectSensor(KinectSensor sensorIn)
         {
-            this.sensor = sensorIn;
+            _sensor = sensorIn;
         }
 
         public void setPixelArray(byte[] Pixels, int strideIn)
@@ -265,7 +265,7 @@ namespace ColourSkel
                 drawingContext.DrawRectangle(
                     Brushes.Red,
                     null,
-                    new Rect(0, RenderHeight - ClipBoundsThickness, RenderWidth, ClipBoundsThickness));
+                    new Rect(0, _RenderHeight - _ClipBoundsThickness, _RenderWidth, _ClipBoundsThickness));
             }
 
             if (skeleton.ClippedEdges.HasFlag(FrameEdges.Top))
@@ -273,7 +273,7 @@ namespace ColourSkel
                 drawingContext.DrawRectangle(
                     Brushes.Red,
                     null,
-                    new Rect(0, 0, RenderWidth, ClipBoundsThickness));
+                    new Rect(0, 0, _RenderWidth, _ClipBoundsThickness));
             }
 
             if (skeleton.ClippedEdges.HasFlag(FrameEdges.Left))
@@ -281,7 +281,7 @@ namespace ColourSkel
                 drawingContext.DrawRectangle(
                     Brushes.Red,
                     null,
-                    new Rect(0, 0, ClipBoundsThickness, RenderHeight));
+                    new Rect(0, 0, _ClipBoundsThickness, _RenderHeight));
             }
 
             if (skeleton.ClippedEdges.HasFlag(FrameEdges.Right))
@@ -289,16 +289,16 @@ namespace ColourSkel
                 drawingContext.DrawRectangle(
                     Brushes.Red,
                     null,
-                    new Rect(RenderWidth - ClipBoundsThickness, 0, ClipBoundsThickness, RenderHeight));
+                    new Rect(_RenderWidth - _ClipBoundsThickness, 0, _ClipBoundsThickness, _RenderHeight));
             }
         }
 
         public void SkeletonStart()
         {
-            if (sensor != null)
+            if (_sensor != null)
             {
                 // Turn on the skeleton stream to receive skeleton frames
-                this.sensor.SkeletonStream.Enable();
+                _sensor.SkeletonStream.Enable();
             }
             else
             {
@@ -306,10 +306,10 @@ namespace ColourSkel
             }
 
             // Create the drawing group we'll use for drawing
-            this.drawingGroup = new DrawingGroup();
+            _drawingGroup = new DrawingGroup();
 
             // Create an image source that we can use in our image control
-            this.imageSource = new DrawingImage(this.drawingGroup);
+            _imageSource = new DrawingImage(_drawingGroup);
         }
 
         public void SkeletonStart (WriteableBitmap colourImg)
@@ -319,10 +319,10 @@ namespace ColourSkel
                 return;
             }
             // Create the drawing group we'll use for drawing
-            this.drawingGroup = new DrawingGroup();
+            _drawingGroup = new DrawingGroup();
 
             // Create an image source that we can use in our image control
-            this.imageSource = new DrawingImage(this.drawingGroup);
+            _imageSource = new DrawingImage(_drawingGroup);
 
             // Set the input image to the passed in image parameter
             setColourImage(colourImg);
@@ -339,33 +339,33 @@ namespace ColourSkel
         private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
         {
             // Render Torso
-            this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
-            this.DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
-            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
+            DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
+            DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
+            DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
+            DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
+            DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
+            DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
+            DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
 
             // Left Arm
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.WristLeft, JointType.HandLeft);
+            DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
+            DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
+            DrawBone(skeleton, drawingContext, JointType.WristLeft, JointType.HandLeft);
 
             // Right Arm
-            this.DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
-            this.DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
-            this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
+            DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
+            DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
+            DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
 
             // Left Leg
-            this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
-            this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
+            DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
+            DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
+            DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
 
             // Right Leg
-            this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
-            this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
-            this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
+            DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
+            DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
+            DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
 
             // Render Joints
             foreach (Joint joint in skeleton.Joints)
@@ -374,16 +374,16 @@ namespace ColourSkel
 
                 if (joint.TrackingState == JointTrackingState.Tracked)
                 {
-                    drawBrush = this.trackedJointBrush;
+                    drawBrush = _trackedJointBrush;
                 }
                 else if (joint.TrackingState == JointTrackingState.Inferred)
                 {
-                    drawBrush = this.inferredJointBrush;
+                    drawBrush = _inferredJointBrush;
                 }
 
                 if (drawBrush != null)
                 {
-                    drawingContext.DrawEllipse(drawBrush, null, this.SkeletonPointToScreen(joint.Position), JointThickness, JointThickness);
+                    drawingContext.DrawEllipse(drawBrush, null, SkeletonPointToScreen(joint.Position), _JointThickness, _JointThickness);
                 }
             }
         }
@@ -402,7 +402,7 @@ namespace ColourSkel
 
             _skelPointsMeasure = new SkeletonPoint[_colourFormatHeight*_colourFormatWidth];
 
-            this.sensor.CoordinateMapper.MapColorFrameToSkeletonFrame(colourFormat, depthFormat, _depthImageMeasure, _skelPointsMeasure);            
+            _sensor.CoordinateMapper.MapColorFrameToSkeletonFrame(colourFormat, depthFormat, _depthImageMeasure, _skelPointsMeasure);            
         }
 
         private SkeletonPoint getSkelPointFromPoint(Point imagePoint)
@@ -428,7 +428,7 @@ namespace ColourSkel
         {
             // Convert point to depth space.  
             // We are not using depth directly, but we do want the points in our 640x480 output resolution.
-            ColorImagePoint colourPoint = this.sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skelpoint, ColorImageFormat.RgbResolution640x480Fps30);
+            ColorImagePoint colourPoint = _sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skelpoint, ColorImageFormat.RgbResolution640x480Fps30);
             //DepthImagePoint depthPoint = this.sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(skelpoint, DepthImageFormat.Resolution640x480Fps30);
             return new Point(colourPoint.X, colourPoint.Y);
         }
@@ -460,14 +460,14 @@ namespace ColourSkel
             }
 
             // We assume all drawn bones are inferred unless BOTH joints are tracked
-            Pen drawPen = this.inferredBonePen;
+            Pen drawPen = _inferredBonePen;
             if (joint0.TrackingState == JointTrackingState.Tracked && joint1.TrackingState == JointTrackingState.Tracked)
             {
-                drawPen = this.trackedBonePen;
+                drawPen = _trackedBonePen;
             }
 
-            Point startJointPos = this.SkeletonPointToScreen(joint0.Position);
-            Point endJointPos = this.SkeletonPointToScreen(joint1.Position);
+            Point startJointPos = SkeletonPointToScreen(joint0.Position);
+            Point endJointPos = SkeletonPointToScreen(joint1.Position);
             drawingContext.DrawLine(drawPen, startJointPos, endJointPos);
             
             if(jointType0.Equals(JointType.ElbowLeft) || jointType1.Equals(JointType.ElbowLeft))
@@ -488,14 +488,14 @@ namespace ColourSkel
         public void DrawPerpLine(Skeleton skeleton, DrawingContext drawingContext, Point startPoint, Point endPoint, JointType jointType1, JointType jointType2)
         {
             //Measure measureObj = new Measure(skeleton);
-            var perpGrad = totalMeasure.perpendicularGrad(startPoint, endPoint);
-            var midPoint = totalMeasure.midpoint(startPoint, endPoint);
+            var perpGrad = _totalMeasure.perpendicularGrad(startPoint, endPoint);
+            var midPoint = _totalMeasure.midpoint(startPoint, endPoint);
             //Point startPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)startPoint.X);
             //Point endPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)endPoint.X);
-            Point startPerpPoint = getStartPoint(totalMeasure, midPoint, perpGrad);
-            Point endPerpPoint = getEndPoint(totalMeasure, midPoint, perpGrad);
-            addMeasurement(totalMeasure, startPerpPoint, endPerpPoint, jointType1, jointType2);
-            Pen drawPen = this.perpLineTrackedBone;
+            Point startPerpPoint = getStartPoint(_totalMeasure, midPoint, perpGrad);
+            Point endPerpPoint = getEndPoint(_totalMeasure, midPoint, perpGrad);
+            addMeasurement(_totalMeasure, startPerpPoint, endPerpPoint, jointType1, jointType2);
+            Pen drawPen = _perpLineTrackedBone;
             drawingContext.DrawLine(drawPen, startPerpPoint, endPerpPoint);
         }
 
@@ -503,7 +503,7 @@ namespace ColourSkel
         {
             SkeletonPoint skelPoint1 = getSkelPointFromPoint(point1);
             SkeletonPoint skelPoint2 = getSkelPointFromPoint(point2);
-            totalMeasure.addMeasurement(skelPoint1, skelPoint2, jointType1, jointType2);
+            _totalMeasure.addMeasurement(skelPoint1, skelPoint2, jointType1, jointType2);
         }
 
         public Point getStartPoint(Measure measObj, Point midpoint, float perpGrad)
@@ -511,7 +511,7 @@ namespace ColourSkel
             Point potentialStart = midpoint;
             int loopCount = 1;
 
-            while (potentialStart.X > 0 && potentialStart.Y > 0 && potentialStart.X < colourImageSource.PixelWidth && potentialStart.Y < colourImageSource.PixelHeight)
+            while (potentialStart.X > 0 && potentialStart.Y > 0 && potentialStart.X < _colourImageSource.PixelWidth && potentialStart.Y < _colourImageSource.PixelHeight)
             {
                 //int xValue = (int)midpoint.X - loopCount * 10;
                 int xValue = (int)midpoint.X - loopCount;
@@ -566,7 +566,7 @@ namespace ColourSkel
             Point potentialStart = midpoint;
             int loopCount = 1;
 
-            while (potentialStart.X > 0 && potentialStart.Y > 0 && potentialStart.X < colourImageSource.PixelWidth && potentialStart.Y < colourImageSource.PixelHeight)
+            while (potentialStart.X > 0 && potentialStart.Y > 0 && potentialStart.X < _colourImageSource.PixelWidth && potentialStart.Y < _colourImageSource.PixelHeight)
             {
                 //int xValue = (int)midpoint.X + loopCount * 10;
                 int xValue = (int)midpoint.X + loopCount;
@@ -620,7 +620,7 @@ namespace ColourSkel
         {
             int yValue = (int)point.Y - 1;
             int xValue = (int)point.X;
-            if (yValue > colourImageSource.PixelHeight || xValue > colourImageSource.PixelWidth || yValue < 0 || xValue < 0)
+            if (yValue > _colourImageSource.PixelHeight || xValue > _colourImageSource.PixelWidth || yValue < 0 || xValue < 0)
             {
                 return 0;
             }
@@ -646,16 +646,16 @@ namespace ColourSkel
                 }
             }
 
-            using (DrawingContext dc = this.drawingGroup.Open())
+            using (DrawingContext dc = _drawingGroup.Open())
             {
-                if(this.colourImageSource != null)
+                if(_colourImageSource != null)
                 {
-                    dc.DrawImage(this.colourImageSource, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                    dc.DrawImage(_colourImageSource, new Rect(0.0, 0.0, _RenderWidth, _RenderHeight));
                 }
                 else
                 {
                     // Draw a transparent background to set the render size
-                    dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                    dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, _RenderWidth, _RenderHeight));
                 }                
 
                 if (skeletons.Length != 0)
@@ -666,24 +666,24 @@ namespace ColourSkel
 
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            this.DrawBonesAndJoints(skel, dc);
+                            DrawBonesAndJoints(skel, dc);
                             _skeletonOut = skel;
-                            this.measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
+                            measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
                         }
                         else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
                         {
                             dc.DrawEllipse(
-                            this.centerPointBrush,
+                            _centerPointBrush,
                             null,
-                            this.SkeletonPointToScreen(skel.Position),
-                            BodyCenterThickness,
-                            BodyCenterThickness);
+                            SkeletonPointToScreen(skel.Position),
+                            _BodyCenterThickness,
+                            _BodyCenterThickness);
                         }                        
                     }                    
                 }
 
                 // prevent drawing outside of our render area
-                this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                _drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, _RenderWidth, _RenderHeight));
             }
         }
 
@@ -694,16 +694,16 @@ namespace ColourSkel
         /// <param name="e">event arguments</param>
         public void processSkeletonFrame()
         {            
-            using (DrawingContext dc = this.drawingGroup.Open())
+            using (DrawingContext dc = _drawingGroup.Open())
             {
-                if (this.colourImageSource != null)
+                if (_colourImageSource != null)
                 {
-                    dc.DrawImage(this.colourImageSource, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                    dc.DrawImage(_colourImageSource, new Rect(0.0, 0.0, _RenderWidth, _RenderHeight));
                 }
                 else
                 {
                     // Draw a transparent background to set the render size
-                    dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                    dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, _RenderWidth, _RenderHeight));
                 }
 
                 if (_skeletons.Length != 0)
@@ -715,32 +715,32 @@ namespace ColourSkel
                         if (skel.TrackingState == SkeletonTrackingState.Tracked)
                         {
                             _skeletonOut = skel;
-                            totalMeasure = new Measure(_skeletonOut);
-                            this.DrawBonesAndJoints(skel, dc);
-                            this.measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
+                            _totalMeasure = new Measure(_skeletonOut);
+                            DrawBonesAndJoints(skel, dc);
+                            measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
                         }
                         else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
                         {
                             dc.DrawEllipse(
-                            this.centerPointBrush,
+                            _centerPointBrush,
                             null,
-                            this.SkeletonPointToScreen(skel.Position),
-                            BodyCenterThickness,
-                            BodyCenterThickness);
+                            SkeletonPointToScreen(skel.Position),
+                            _BodyCenterThickness,
+                            _BodyCenterThickness);
                         }
                     }
                 }
 
                 // prevent drawing outside of our render area
-                this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
+                _drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, _RenderWidth, _RenderHeight));
             }
 
-            lastTotalMeasure = new Measure(totalMeasure);
+            _lastTotalMeasure = new Measure(_totalMeasure);
         }
 
         public DrawingImage getOutputImage()
         {
-            return this.imageSource;
+            return _imageSource;
         }
 
         public Skeleton getSkeletonOut()
@@ -762,15 +762,15 @@ namespace ColourSkel
             Measure measureObj = new Measure(_skeletonOut);
             output += " - " + measureObj.distanceJoints(joint1, joint2);
 
-            this.measureOut = output;
+            _measureOut = output;
         }
 
         public String getBodyMeasurements()
         {
             String output = "All measurements - ";
-            if (totalMeasure != null)
+            if (_totalMeasure != null)
             {
-                output += lastTotalMeasure.toStringArmLeftLower() + " " + lastTotalMeasure.toStringArmLeftUpper();
+                output += _lastTotalMeasure.toStringArmLeftLower() + " " + _lastTotalMeasure.toStringArmLeftUpper();
             }
             else
             {
@@ -781,12 +781,12 @@ namespace ColourSkel
 
         public Measure getMostRecentMeasure()
         {
-            return lastTotalMeasure;
+            return _lastTotalMeasure;
         }
 
         public String getMeasurements()
         {
-            return this.measureOut;
+            return _measureOut;
         }
 
         public Boolean isEmpty()
