@@ -109,6 +109,12 @@ namespace ColourSkel
             return _armLeftLower;
         }
 
+        public double formatToCm(double measureIn)
+        {
+            double output = measureIn * 100;
+            return Math.Round(output, 2);
+        }
+
         public Skeleton getSkeletonOut()
         {
             return _skeletonIn;
@@ -116,12 +122,12 @@ namespace ColourSkel
 
         public String toStringArmLeftUpper()
         {
-            return "Upper Left Arm: " + getArmLeftUpper();
+            return "Upper Left Arm: " + formatToCm(getArmLeftUpper()) + "cm";
         }
 
         public String toStringArmLeftLower()
         {
-            return "Lower Left Arm: " + getArmLeftLower();
+            return "Lower Left Arm: " + formatToCm(getArmLeftLower()) + "cm";
         }
 
         public String toStringAllMeaurements()
