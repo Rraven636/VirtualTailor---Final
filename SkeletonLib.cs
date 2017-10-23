@@ -100,43 +100,49 @@ namespace ColourSkel
         /// <summary>
         /// The skeletonframe sent from a skeleton ready event
         /// </summary>
-        private SkeletonFrame skelFrame;
+        private SkeletonFrame _skelFrame;
 
-        private Skeleton[] skeletons = new Skeleton[0];
+        private ColorImageFrame _colourFrame;
 
-        private byte[] foregroundArray;
+        private DepthImageFrame _depthFrame;
 
-        private int foregroundStride;
+        private Skeleton[] _skeletons = new Skeleton[0];
 
-        private DepthImagePixel[] depthImageMeasure;
+        private byte[] _foregroundArray;
 
-        private SkeletonPoint[] skelPointsMeasure;
+        private int _foregroundStride;
 
-        private int colourFormatHeight, colourFormatWidth, depthFormatHeight, depthFormatWidth;
+        private DepthImagePixel[] _depthImageMeasure;
+
+        private SkeletonPoint[] _skelPointsMeasure;
+
+        private int _colourFormatHeight, _colourFormatWidth, _depthFormatHeight, _depthFormatWidth;
 
         private Measure totalMeasure;
+
+        private Measure lastTotalMeasure;
 
 
         public SkeletonLib()
         {
-            this.RenderWidth = 0;
-            this.RenderHeight = 0;
-            this.JointThickness = 0;
-            this.BodyCenterThickness = 0;
-            this.ClipBoundsThickness = 0;
+            this.sensor = null;
+            _skelFrame = null;
+            this.RenderWidth = 640.0f;
+            this.RenderHeight = 480.0f;
+            this.JointThickness = 3;
+            this.BodyCenterThickness = 10;
+            this.ClipBoundsThickness = 10;
             this.centerPointBrush = Brushes.Blue;
             this.trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
             this.inferredJointBrush = Brushes.Yellow;
             this.trackedBonePen = new Pen(Brushes.Green, 6);
             this.inferredBonePen = new Pen(Brushes.Gray, 1);
-            this.sensor = null;
-            this.skelFrame = null;
         }
 
         public SkeletonLib(KinectSensor sensor)
         {
             this.sensor = sensor;
-            this.skelFrame = null;
+            _skelFrame = null;
             this.RenderWidth = 640.0f;
             this.RenderHeight = 480.0f;
             this.JointThickness = 3;
@@ -150,8 +156,7 @@ namespace ColourSkel
         }
 
         public SkeletonLib(SkeletonFrame skelFrame)
-        {
-            this.skelFrame = skelFrame;
+        {            
             this.sensor = null;
             this.RenderWidth = 640.0f;
             this.RenderHeight = 480.0f;
@@ -164,12 +169,35 @@ namespace ColourSkel
             this.trackedBonePen = new Pen(Brushes.Green, 6);
             this.inferredBonePen = new Pen(Brushes.Gray, 1);
 
+            setSkeletonFrame(skelFrame);
+        }
+
+        public void setColourFrame(ColorImageFrame colourFrame, int colourHeight, int colourWidth)
+        {
+            _colourFrame = colourFrame;
+            _colourFormatHeight = colourHeight;
+            _colourFormatWidth = colourWidth;
+        }
+
+        public void setDepthFrame(DepthImageFrame depthFrame, int depthHeight, int depthWidth)
+        {
+            _depthFrame = depthFrame;
+            _depthFormatHeight = depthHeight;
+            _depthFormatWidth = depthWidth;
+
+            _depthImageMeasure = new DepthImagePixel[_depthFormatHeight * _depthFormatWidth];
+            depthFrame.CopyDepthImagePixelDataTo(_depthImageMeasure);
+        }
+
+        public void setSkeletonFrame(SkeletonFrame skelFrame)
+        {
+            _skelFrame = skelFrame;
             using (SkeletonFrame skeletonFrame = skelFrame)
             {
                 if (skeletonFrame != null)
                 {
-                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
+                    _skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
+                    skeletonFrame.CopySkeletonDataTo(_skeletons);
                 }
             }
         }
@@ -190,7 +218,7 @@ namespace ColourSkel
 
         public void setPixelArray(byte[] Pixels, int strideIn)
         {
-            this.foregroundArray = new byte[Pixels.Length];
+            _foregroundArray = new byte[Pixels.Length];
             for(int i = 0; i < Pixels.Length; i++)
             {
                 if (Pixels[i] == 0)
@@ -201,7 +229,7 @@ namespace ColourSkel
                     {
                         while(temp >= 0)
                         {
-                            foregroundArray[temp] = 0;
+                            _foregroundArray[temp] = 0;
                             temp--;
                         }
                     }
@@ -211,7 +239,7 @@ namespace ColourSkel
                         {
                             while (temp > previousZero)
                             {
-                                foregroundArray[temp] = 0;
+                                _foregroundArray[temp] = 0;
                                 temp--;
                             }
                         }
@@ -219,10 +247,10 @@ namespace ColourSkel
                 }
                 else
                 {
-                    foregroundArray[i] = Pixels[i];
+                    _foregroundArray[i] = Pixels[i];
                 }
             }
-            this.foregroundStride = strideIn;
+            _foregroundStride = strideIn;
         }
 
         /// <summary>
@@ -286,7 +314,7 @@ namespace ColourSkel
 
         public void SkeletonStart (WriteableBitmap colourImg)
         {
-            if (skelFrame == null)
+            if (_skelFrame == null)
             {
                 return;
             }
@@ -360,28 +388,35 @@ namespace ColourSkel
             }
         }
 
-        public void populateDepthAndSkelPoints(ColorImageFrame cFrame, ColorImageFormat cFormat, DepthImageFormat dFormat, int depthHeight, int depthWidth, int colourHeight, int colourWidth)
+        public void populateDepthAndSkelPoints(ColorImageFrame colourFrame, DepthImageFrame depthFrame, ColorImageFormat colourFormat, DepthImageFormat depthFormat, int depthHeight, int depthWidth, int colourHeight, int colourWidth)
         {
-            this.colourFormatHeight = colourHeight;
-            this.colourFormatWidth = colourWidth;
-            this.depthFormatHeight = depthHeight;
-            this.depthFormatWidth = depthWidth;
-            this.depthImageMeasure = new DepthImagePixel[depthFormatHeight*depthFormatWidth];
-            this.skelPointsMeasure = new SkeletonPoint[colourFormatHeight*colourFormatWidth];
-            this.sensor.CoordinateMapper.MapColorFrameToSkeletonFrame(cFormat, dFormat, depthImageMeasure, skelPointsMeasure);            
+            if (_colourFormatHeight == 0 || _colourFormatWidth == 0)
+            {
+                setColourFrame(colourFrame, colourHeight, colourWidth);
+            }
+
+            if (_depthFormatHeight == 0 || _depthFormatWidth == 0)
+            {
+                setDepthFrame(depthFrame, depthHeight, depthWidth);
+            }
+
+            _skelPointsMeasure = new SkeletonPoint[_colourFormatHeight*_colourFormatWidth];
+
+            this.sensor.CoordinateMapper.MapColorFrameToSkeletonFrame(colourFormat, depthFormat, _depthImageMeasure, _skelPointsMeasure);            
         }
 
         private SkeletonPoint getSkelPointFromPoint(Point imagePoint)
         {
             SkeletonPoint skelPoint = new SkeletonPoint();
-            int yValue = (int)imagePoint.Y;
+            int yValue = (int)imagePoint.Y - 1;
             int xValue = (int)imagePoint.X;
-            if (yValue > this.colourFormatHeight || xValue > this.colourFormatWidth || yValue < 0 || xValue < 0)
+            if (yValue > _colourFormatHeight || xValue > _colourFormatWidth || yValue < 0 || xValue < 0)
             {
                 return skelPoint;
             }
-            int arrayVal = yValue * this.colourFormatWidth + xValue;
-            return this.skelPointsMeasure[arrayVal];
+            int arrayVal = yValue * _colourFormatWidth + xValue;
+            skelPoint = _skelPointsMeasure[arrayVal];
+            return skelPoint;
         }
 
         /// <summary>
@@ -583,14 +618,14 @@ namespace ColourSkel
 
         public byte getPixelValue(Point point)
         {
-            int yValue = (int)point.Y;
+            int yValue = (int)point.Y - 1;
             int xValue = (int)point.X;
             if (yValue > colourImageSource.PixelHeight || xValue > colourImageSource.PixelWidth || yValue < 0 || xValue < 0)
             {
                 return 0;
             }
-            int arrayVal = (int)point.Y * this.foregroundStride + (int)point.X;
-            return this.foregroundArray[arrayVal];
+            int arrayVal = (int)point.Y * _foregroundStride + (int)point.X;
+            return _foregroundArray[arrayVal];
         }
 
         /// <summary>
@@ -671,9 +706,9 @@ namespace ColourSkel
                     dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, RenderWidth, RenderHeight));
                 }
 
-                if (skeletons.Length != 0)
+                if (_skeletons.Length != 0)
                 {
-                    foreach (Skeleton skel in skeletons)
+                    foreach (Skeleton skel in _skeletons)
                     {
                         RenderClippedEdges(skel, dc);
 
@@ -699,6 +734,8 @@ namespace ColourSkel
                 // prevent drawing outside of our render area
                 this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
             }
+
+            lastTotalMeasure = new Measure(totalMeasure);
         }
 
         public DrawingImage getOutputImage()
@@ -713,7 +750,7 @@ namespace ColourSkel
 
         public SkeletonFrame getSkeletonFrameOut()
         {
-            return this.skelFrame;
+            return _skelFrame;
         }
 
         public void measureJoints(JointType jointType1, JointType jointType2)
@@ -733,13 +770,18 @@ namespace ColourSkel
             String output = "All measurements - ";
             if (totalMeasure != null)
             {
-                output += totalMeasure.toStringArmLeftLower() + " " + totalMeasure.toStringArmLeftUpper();
+                output += lastTotalMeasure.toStringArmLeftLower() + " " + lastTotalMeasure.toStringArmLeftUpper();
             }
             else
             {
                 output += "None available yet";
             }
             return output;
+        }
+
+        public Measure getMostRecentMeasure()
+        {
+            return lastTotalMeasure;
         }
 
         public String getMeasurements()
@@ -749,9 +791,9 @@ namespace ColourSkel
 
         public Boolean isEmpty()
         {
-            if (skeletons.Length != 0)
+            if (_skeletons.Length != 0)
             {
-                foreach (Skeleton skel in skeletons)
+                foreach (Skeleton skel in _skeletons)
                 {
                     if (skel.TrackingState == SkeletonTrackingState.Tracked)
                     {

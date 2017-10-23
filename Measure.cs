@@ -35,6 +35,13 @@ namespace ColourSkel
             _armLeftLower = 0;
         }
 
+        public Measure(Measure measureObj)
+        {
+            _skeletonIn = measureObj.getSkeletonOut();
+            _armLeftUpper = measureObj.getArmLeftUpper();
+            _armLeftLower = measureObj.getArmLeftLower();
+        }
+
         public double distanceSkelPoint(SkeletonPoint p1, SkeletonPoint p2)
         {
             var xdiff = p1.X - p2.X;
@@ -102,6 +109,11 @@ namespace ColourSkel
             return _armLeftLower;
         }
 
+        public Skeleton getSkeletonOut()
+        {
+            return _skeletonIn;
+        }
+
         public String toStringArmLeftUpper()
         {
             return "Upper Left Arm: " + getArmLeftUpper();
@@ -110,6 +122,13 @@ namespace ColourSkel
         public String toStringArmLeftLower()
         {
             return "Lower Left Arm: " + getArmLeftLower();
+        }
+
+        public String toStringAllMeaurements()
+        {
+            String output = "Measurements - ";
+            output += toStringArmLeftUpper() + " " + toStringArmLeftLower();
+            return output;
         }
 
     }

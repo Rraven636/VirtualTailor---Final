@@ -29,7 +29,7 @@ namespace ColourSkel
         /// <summary>
         /// Format we will use for the depth stream
         /// </summary>
-        private const DepthImageFormat DepthFormat = DepthImageFormat.Resolution320x240Fps30;
+        private const DepthImageFormat DepthFormat = DepthImageFormat.Resolution640x480Fps30;
 
         /// <summary>
         /// Format we will use for the color stream
@@ -90,6 +90,10 @@ namespace ColourSkel
         private ColorImageFrame colourFrameIn;
 
         private DepthImageFrame depthFrameIn;
+
+        private Measure mostRecentMeasurements;
+
+        private String measurementsStringOutput = "Still starting up";
 
         public MainWindow()
         {
@@ -244,7 +248,9 @@ namespace ColourSkel
             //this.measureBarText.Text = skelObj.getMeasurements();
             if (skelObj != null && skelObj.isEmpty() == false)
             {
-                this.measureBarText.Text = skelObj.getBodyMeasurements();
+                //this.measureBarText.Text = skelObj.getBodyMeasurements();
+                //mostRecentMeasurements.toStringAllMeaurements();
+                this.measureBarText.Text = measurementsStringOutput;
             }
             else
             {
@@ -318,12 +324,15 @@ namespace ColourSkel
 
             try
             {
+                skelObj = new SkeletonLib();
+
                 using (var depthFrame = e.OpenDepthImageFrame())
                 {
                     if (null != depthFrame)
                     {
                         this.backgroundRemovedColorStream.ProcessDepth(depthFrame.GetRawPixelData(), depthFrame.Timestamp);
                         this.depthFrameIn = depthFrame;
+                        skelObj.setDepthFrame(depthFrame, 480, 640);
                     }
                 }
 
@@ -333,6 +342,7 @@ namespace ColourSkel
                     {
                         this.backgroundRemovedColorStream.ProcessColor(colorFrame.GetRawPixelData(), colorFrame.Timestamp);
                         this.colourFrameIn = colorFrame;
+                        skelObj.setColourFrame(colorFrame, 480, 640);
                     }
                 }
 
@@ -342,7 +352,7 @@ namespace ColourSkel
                     {
                         skeletonFrame.CopySkeletonDataTo(this.skeletons);
                         this.backgroundRemovedColorStream.ProcessSkeleton(this.skeletons, skeletonFrame.Timestamp);
-                        skelObj = new SkeletonLib(skeletonFrame);
+                        skelObj.setSkeletonFrame(skeletonFrame);
                     }
                 }
 
@@ -396,12 +406,15 @@ namespace ColourSkel
 
                         skelObj.setActiveKinectSensor(this.sensorChooser.Kinect);
 
-                        skelObj.populateDepthAndSkelPoints(colourFrameIn, ColorImageFormat.RgbResolution640x480Fps30, DepthImageFormat.Resolution320x240Fps30, 240, 320, 480, 640);
+                        skelObj.populateDepthAndSkelPoints(colourFrameIn, depthFrameIn, ColorFormat, DepthFormat, 480, 640, 480, 640);
                         
                         skelObj.SkeletonStart(this.foregroundBitmap);
  
                         // Set the image we display to point to the bitmap where we'll put the image data
                         this.Image.Source = skelObj.getOutputImage();
+
+                        //mostRecentMeasurements = new Measure(skelObj.getMostRecentMeasure());
+                        measurementsStringOutput = skelObj.getBodyMeasurements();
                     }
                     else
                     {
