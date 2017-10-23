@@ -55,7 +55,7 @@ namespace ColourSkel
         {
             SkeletonPoint p1 = joint1.Position;
             SkeletonPoint p2 = joint2.Position;
-            return this.distanceSkelPoint(p1, p2);
+            return distanceSkelPoint(p1, p2);
         }
 
         public float perpendicularGrad(Point p1, Point p2)

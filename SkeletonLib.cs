@@ -139,39 +139,6 @@ namespace ColourSkel
             _inferredBonePen = new Pen(Brushes.Gray, 1);
         }
 
-        public SkeletonLib(KinectSensor sensor)
-        {
-            _sensor = sensor;
-            _skelFrame = null;
-            _RenderWidth = 640.0f;
-            _RenderHeight = 480.0f;
-            _JointThickness = 3;
-            _BodyCenterThickness = 10;
-            _ClipBoundsThickness = 10;
-            _centerPointBrush = Brushes.Blue;
-            _trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
-            _inferredJointBrush = Brushes.Yellow;
-            _trackedBonePen = new Pen(Brushes.Green, 6);
-            _inferredBonePen = new Pen(Brushes.Gray, 1);
-        }
-
-        public SkeletonLib(SkeletonFrame skelFrame)
-        {
-            _sensor = null;
-            _RenderWidth = 640.0f;
-            _RenderHeight = 480.0f;
-            _JointThickness = 3;
-            _BodyCenterThickness = 10;
-            _ClipBoundsThickness = 10;
-            _centerPointBrush = Brushes.Blue;
-            _trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
-            _inferredJointBrush = Brushes.Yellow;
-            _trackedBonePen = new Pen(Brushes.Green, 6);
-            _inferredBonePen = new Pen(Brushes.Gray, 1);
-
-            setSkeletonFrame(skelFrame);
-        }
-
         public void setColourFrame(ColorImageFrame colourFrame, int colourHeight, int colourWidth)
         {
             _colourFrame = colourFrame;
@@ -291,25 +258,6 @@ namespace ColourSkel
                     null,
                     new Rect(_RenderWidth - _ClipBoundsThickness, 0, _ClipBoundsThickness, _RenderHeight));
             }
-        }
-
-        public void SkeletonStart()
-        {
-            if (_sensor != null)
-            {
-                // Turn on the skeleton stream to receive skeleton frames
-                _sensor.SkeletonStream.Enable();
-            }
-            else
-            {
-                return;
-            }
-
-            // Create the drawing group we'll use for drawing
-            _drawingGroup = new DrawingGroup();
-
-            // Create an image source that we can use in our image control
-            _imageSource = new DrawingImage(_drawingGroup);
         }
 
         public void SkeletonStart (WriteableBitmap colourImg)
@@ -767,14 +715,14 @@ namespace ColourSkel
 
         public String getBodyMeasurements()
         {
-            String output = "All measurements - ";
-            if (_totalMeasure != null)
+            String output = "";
+            if (_lastTotalMeasure != null)
             {
                 output += _lastTotalMeasure.toStringArmLeftLower() + " " + _lastTotalMeasure.toStringArmLeftUpper();
             }
             else
             {
-                output += "None available yet";
+                output += "Measurements - None available yet";
             }
             return output;
         }
