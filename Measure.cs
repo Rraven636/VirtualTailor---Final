@@ -34,6 +34,8 @@ namespace ColourSkel
         private double _legRightLower;
 
         private double _chest;
+        private double _neck;
+        private double _waist;
 
         public Measure()
         {
@@ -56,6 +58,8 @@ namespace ColourSkel
             _legRightLower = 0;
             
             _chest = 0;
+            _neck = 0;
+            _waist = 0;
         }
 
         public Measure(Skeleton tempSkel)
@@ -79,6 +83,8 @@ namespace ColourSkel
             _legRightLower = 0;
 
             _chest = 0;
+            _neck = 0;
+            _waist = 0;
         }
 
 
@@ -104,6 +110,8 @@ namespace ColourSkel
             _legRightLower = measureObj.getLegRightLower();
 
             _chest = measureObj.getChest();
+            _neck = measureObj.getNeck();
+            _waist = measureObj.getWaist();
         }
 
         public double distanceSkelPoint(SkeletonPoint p1, SkeletonPoint p2)
@@ -220,7 +228,7 @@ namespace ColourSkel
                 }
             }
 
-            // Right Leg Lower Check
+            // Chest
             if (jointType1.Equals(JointType.ShoulderCenter))
             {
                 if (jointType2.Equals(JointType.Spine))
@@ -228,6 +236,26 @@ namespace ColourSkel
                     _chest = measurement;
                 }
             }
+
+            // Neck
+            if (jointType1.Equals(JointType.Head))
+            {
+                if (jointType2.Equals(JointType.ShoulderCenter))
+                {
+                    _chest = measurement;
+                }
+            }
+
+            /*
+            // Waist
+            if (jointType1.Equals(JointType.ShoulderCenter))
+            {
+                if (jointType2.Equals(JointType.Spine))
+                {
+                    _chest = measurement;
+                }
+            }
+            */
         }
 
         public double getArmLeftUpper()
@@ -271,6 +299,16 @@ namespace ColourSkel
         }
 
         public double getChest()
+        {
+            return _chest;
+        }
+
+        public double getNeck()
+        {
+            return _chest;
+        }
+
+        public double getWaist()
         {
             return _chest;
         }
@@ -337,6 +375,16 @@ namespace ColourSkel
         public String toStringChest()
         {
             return "Chest: " + formatToCm(getChest()) + "cm";
+        }
+
+        public String toStringNeck()
+        {
+            return "Neck: " + formatToCm(getNeck()) + "cm";
+        }
+
+        public String toStringWaist()
+        {
+            return "Waist: " + formatToCm(getWaist()) + "cm";
         }
 
         public String toStringAllMeaurements()

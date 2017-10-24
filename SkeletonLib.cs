@@ -428,7 +428,13 @@ namespace ColourSkel
             }
 
             //Draw perpendicular line and measure chest
-            if (jointType0.Equals(JointType.ShoulderCenter) || jointType1.Equals(JointType.Spine))
+            if (jointType0.Equals(JointType.ShoulderCenter) && jointType1.Equals(JointType.Spine))
+            {
+                DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos, jointType0, jointType1);
+            }
+
+            //Draw perpendicular line and measure neck
+            if (jointType0.Equals(JointType.Head) && jointType1.Equals(JointType.ShoulderCenter))
             {
                 DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos, jointType0, jointType1);
             }
