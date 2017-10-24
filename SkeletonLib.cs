@@ -417,13 +417,22 @@ namespace ColourSkel
             Point startJointPos = SkeletonPointToScreen(joint0.Position);
             Point endJointPos = SkeletonPointToScreen(joint1.Position);
             drawingContext.DrawLine(drawPen, startJointPos, endJointPos);
-            
-            if(jointType0.Equals(JointType.ElbowLeft) || jointType1.Equals(JointType.ElbowLeft))
+
+            //Draw perpendicular lines and measure arms and legs
+            if (jointType0.Equals(JointType.ElbowLeft) || jointType1.Equals(JointType.ElbowLeft) 
+                || jointType0.Equals(JointType.ElbowRight) || jointType1.Equals(JointType.ElbowRight) 
+                || jointType0.Equals(JointType.KneeLeft) || jointType1.Equals(JointType.KneeLeft) 
+                || jointType0.Equals(JointType.KneeRight) || jointType1.Equals(JointType.KneeRight))
             {
                 DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos, jointType0, jointType1);
             }
-            
-            //DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos);
+
+            //Draw perpendicular line and measure chest
+            if (jointType0.Equals(JointType.ShoulderCenter) || jointType1.Equals(JointType.Spine))
+            {
+                DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos, jointType0, jointType1);
+            }
+
         }
 
         /// <summary>

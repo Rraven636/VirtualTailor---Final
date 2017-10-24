@@ -78,6 +78,28 @@ namespace ColourSkel
 
         private String _measurementsStringOutput = "Still starting up";
 
+        private String _neckStringOutput = "Not available";
+
+        private String _chestStringOutput = "Not available";
+
+        private String _waistStringOutput = "Not available";
+
+        private String _armUpperLeftStringOutput = "Not available";
+
+        private String _armLowerLeftStringOutput = "Not available";
+
+        private String _armUpperRightStringOutput = "Not available";
+
+        private String _armLowerRightStringOutput = "Not available";
+
+        private String _legUpperLeftStringOutput = "Not available";
+
+        private String _legLowerLeftStringOutput = "Not available";
+
+        private String _legUpperRightStringOutput = "Not available";
+
+        private String _legLowerRightStringOutput = "Not available";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -142,6 +164,26 @@ namespace ColourSkel
             if (_skelObj != null && _skelObj.isEmpty() == false)
             {
                 this.measureBarText.Text = _measurementsStringOutput;
+
+                this.NeckMeasureBlock.Text = _neckStringOutput;
+                this.ChestMeasureBlock.Text = _chestStringOutput;
+                this.WaistMeasureBlock.Text = _waistStringOutput;
+
+                // Left Arm
+                this.LeftUpperArmMeasureBlock.Text = _armUpperLeftStringOutput;
+                this.LeftLowerArmMeasureBlock.Text = _armLowerLeftStringOutput;
+
+                // Right Arm
+                this.RightUpperArmMeasureBlock.Text = _armUpperRightStringOutput;
+                this.RightLowerArmMeasureBlock.Text = _armLowerRightStringOutput;
+
+                // Left Leg
+                this.LeftUpperLegMeasureBlock.Text = _legUpperLeftStringOutput;
+                this.LeftLowerLegMeasureBlock.Text = _legLowerLeftStringOutput;
+
+                // Right Leg
+                this.RightUpperLegMeasureBlock.Text = _legUpperRightStringOutput;
+                this.RightLowerLegMeasureBlock.Text = _legLowerRightStringOutput;
             }
             else
             {
@@ -262,6 +304,8 @@ namespace ColourSkel
 
                         // Set the output string to the most recent body measurements obtained
                         _measurementsStringOutput = _skelObj.getBodyMeasurements();
+
+                        populateStrings(_skelObj.getMostRecentMeasure());
                     }
                     else
                     {
@@ -270,6 +314,30 @@ namespace ColourSkel
                     }
                 }
             }
+        }
+
+        public void populateStrings(Measure measureObj)
+        {
+            //_neckStringOutput;
+            //_waistStringOutput;
+
+            _chestStringOutput = measureObj.toStringChest();
+
+            //Left Arm
+            _armUpperLeftStringOutput = measureObj.toStringArmLeftUpper();
+            _armLowerLeftStringOutput = measureObj.toStringArmLeftLower();
+
+            //Right Arm
+            _armUpperRightStringOutput = measureObj.toStringArmRightUpper();
+            _armLowerRightStringOutput = measureObj.toStringArmRightLower();
+
+            //Left Leg
+            _legUpperLeftStringOutput = measureObj.toStringLegLeftUpper();
+            _legLowerLeftStringOutput = measureObj.toStringLegLeftLower();
+
+            //Right Leg 
+            _legUpperRightStringOutput = measureObj.toStringLegRightUpper();
+            _legLowerRightStringOutput = measureObj.toStringLegRightLower();
         }
 
         /// <summary>
