@@ -242,7 +242,7 @@ namespace ColourSkel
             {
                 if (jointType2.Equals(JointType.ShoulderCenter))
                 {
-                    _chest = measurement;
+                    _neck = measurement;
                 }
             }
 
@@ -252,7 +252,7 @@ namespace ColourSkel
             {
                 if (jointType2.Equals(JointType.Spine))
                 {
-                    _chest = measurement;
+                    _waist = measurement;
                 }
             }
             */
@@ -305,12 +305,12 @@ namespace ColourSkel
 
         public double getNeck()
         {
-            return _chest;
+            return _neck;
         }
 
         public double getWaist()
         {
-            return _chest;
+            return _waist;
         }
 
         public double formatToCm(double measureIn)
