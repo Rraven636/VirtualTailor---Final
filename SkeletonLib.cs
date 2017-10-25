@@ -110,6 +110,8 @@ namespace ColourSkel
 
         private byte[] _foregroundArray;
 
+        private byte[][] _filteredArray;
+
         private int _foregroundStride;
 
         private DepthImagePixel[] _depthImageMeasure;
@@ -185,36 +187,17 @@ namespace ColourSkel
 
         public void setPixelArray(byte[] Pixels, int strideIn)
         {
-            _foregroundArray = new byte[Pixels.Length];
-            for(int i = 0; i < Pixels.Length; i++)
+            _foregroundArray = new byte[Pixels.Length/4];
+            for(int i = 3; i < Pixels.Length; i+=4)
             {
+                int foregroundIndex = ((i + 1) / 4) - 1;
                 if (Pixels[i] == 0)
                 {
-                    int previousZero = i - 4;
-                    int temp = i-1;
-                    if (previousZero < 0)
-                    {
-                        while(temp >= 0)
-                        {
-                            _foregroundArray[temp] = 255;
-                            temp--;
-                        }
-                    }
-                    else
-                    {
-                        if (Pixels[previousZero] == 0)
-                        {
-                            while (temp >= previousZero)
-                            {
-                                _foregroundArray[temp] = 255;
-                                temp--;
-                            }
-                        }
-                    }
+                    _foregroundArray[foregroundIndex] = 255;
                 }
                 else
                 {
-                    _foregroundArray[i] = Pixels[i];
+                    _foregroundArray[foregroundIndex] = 0;
                 }
             }
             _foregroundStride = strideIn;
@@ -483,12 +466,14 @@ namespace ColourSkel
             drawingContext.DrawLine(drawPen, startPerpPoint, endPerpPoint);
         }
 
-        public void addMeasurement(Measure measureObj, Point point1, Point point2, JointType jointType1, JointType jointType2)
+        public void addMeasurement(Measure measureObj, Point startPoint, Point endPoint, JointType jointType1, JointType jointType2)
         {
-            SkeletonPoint skelPoint1 = getSkelPointFromPoint(point1);
-            SkeletonPoint skelPoint2 = getSkelPointFromPoint(point2);
+            SkeletonPoint skelPoint1 = getSkelPointFromPoint(startPoint);
+            SkeletonPoint skelPoint2 = getSkelPointFromPoint(endPoint);
             _totalMeasure.addMeasurement(skelPoint1, skelPoint2, jointType1, jointType2);
         }
+
+        public SkeletonPoint refineStartPoint();
 
         public Point getStartPoint(Measure measObj, Point midpoint, float perpGrad)
         {
@@ -506,7 +491,7 @@ namespace ColourSkel
                     int tempXValue = xValue;
                     Boolean check = true;
                     Point tempStart = potentialStart;
-                    for (int i = 1; i <= 10; i++)
+                    for (int i = 1; i <= 5; i++)
                     {
                         tempXValue--;
                         tempStart = measObj.getNewPoint(midpoint, perpGrad, tempXValue);
@@ -519,7 +504,7 @@ namespace ColourSkel
                     }
                     if (check == true)
                     {
-                        potentialStart = tempStart;
+                        potentialStart = measObj.getNewPoint(midpoint, perpGrad, xValue + 1);
                         break;
                     }                    
                 }
@@ -561,7 +546,7 @@ namespace ColourSkel
                     int tempXValue = xValue;
                     Boolean check = true;
                     Point tempStart = potentialStart;
-                    for (int i = 1; i <= 10; i++)
+                    for (int i = 1; i <= 5; i++)
                     {
                         tempXValue++;
                         tempStart = measObj.getNewPoint(midpoint, perpGrad, tempXValue);
@@ -574,7 +559,7 @@ namespace ColourSkel
                     }
                     if (check == true)
                     {
-                        potentialStart = tempStart;
+                        potentialStart = measObj.getNewPoint(midpoint, perpGrad, xValue - 1);
                         break;
                     }
                 }
@@ -608,7 +593,7 @@ namespace ColourSkel
             {
                 return 255;
             }
-            int arrayVal = (int)point.Y * _foregroundStride + (int)point.X;
+            int arrayVal = yValue * _colourImageSource.PixelWidth + xValue;
             return _foregroundArray[arrayVal];
         }
 
