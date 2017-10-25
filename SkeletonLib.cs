@@ -295,6 +295,9 @@ namespace ColourSkel
             DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
             DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
 
+            // Waistline
+            DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.HipRight);
+
             // Left Arm
             DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
             DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
@@ -357,7 +360,7 @@ namespace ColourSkel
         {
             SkeletonPoint skelPoint = new SkeletonPoint();
             int yValue = (int)imagePoint.Y - 1;
-            int xValue = (int)imagePoint.X;
+            int xValue = (int)imagePoint.X - 1;
             if (yValue > _colourFormatHeight || xValue > _colourFormatWidth || yValue < 0 || xValue < 0)
             {
                 return skelPoint;
@@ -416,7 +419,16 @@ namespace ColourSkel
 
             Point startJointPos = SkeletonPointToScreen(joint0.Position);
             Point endJointPos = SkeletonPointToScreen(joint1.Position);
-            drawingContext.DrawLine(drawPen, startJointPos, endJointPos);
+            
+            //Draw waist line and measure waistline
+            if (jointType0.Equals(JointType.HipLeft) && jointType1.Equals(JointType.HipRight))
+            {
+                DrawWaistLine(skeleton, drawingContext, startJointPos, endJointPos, jointType0, jointType1);
+            }
+            else
+            {
+                drawingContext.DrawLine(drawPen, startJointPos, endJointPos);
+            }
 
             //Draw perpendicular lines and measure arms and legs
             if (jointType0.Equals(JointType.ElbowLeft) || jointType1.Equals(JointType.ElbowLeft) 
@@ -438,7 +450,16 @@ namespace ColourSkel
             {
                 DrawPerpLine(skeleton, drawingContext, startJointPos, endJointPos, jointType0, jointType1);
             }
+        }
 
+        public void DrawWaistLine(Skeleton skeleton, DrawingContext drawingContext, Point startPoint, Point endPoint, JointType jointType1, JointType jointType2)
+        {
+            var lineGrad = _totalMeasure.lineGrad(startPoint, endPoint);
+            Point startLinePoint = getStartPoint(_totalMeasure, startPoint, lineGrad);
+            Point endLinePoint = getEndPoint(_totalMeasure, endPoint, lineGrad);
+            addMeasurement(_totalMeasure, startLinePoint, endLinePoint, jointType1, jointType2);
+            Pen waistPen = _perpLineTrackedBone;
+            drawingContext.DrawLine(waistPen, startLinePoint, endLinePoint);
         }
 
         /// <summary>
@@ -582,7 +603,7 @@ namespace ColourSkel
         public byte getPixelValue(Point point)
         {
             int yValue = (int)point.Y - 1;
-            int xValue = (int)point.X;
+            int xValue = (int)point.X - 1;
             if (yValue > _colourImageSource.PixelHeight || xValue > _colourImageSource.PixelWidth || yValue < 0 || xValue < 0)
             {
                 return 0;

@@ -319,8 +319,7 @@ namespace ColourSkel
         public void populateStrings(Measure measureObj)
         {
             _neckStringOutput = measureObj.toStringNeck();
-            //_waistStringOutput;
-
+            _waistStringOutput = measureObj.toStringWaist();
             _chestStringOutput = measureObj.toStringChest();
 
             //Left Arm

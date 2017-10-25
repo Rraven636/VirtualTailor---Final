@@ -137,6 +137,12 @@ namespace ColourSkel
             return perpGrad;
         }
 
+        public float lineGrad(Point p1, Point p2)
+        {
+            var grad = ((float)(p2.Y - p1.Y)) / ((float)(p2.X - p1.X));
+            return grad;
+        }
+
         public Point midpoint(Point p1, Point p2)
         {
             var xCo = (float)(p1.X + p2.X) / 2.0f;
@@ -246,16 +252,16 @@ namespace ColourSkel
                 }
             }
 
-            /*
+            
             // Waist
-            if (jointType1.Equals(JointType.ShoulderCenter))
+            if (jointType1.Equals(JointType.HipLeft))
             {
-                if (jointType2.Equals(JointType.Spine))
+                if (jointType2.Equals(JointType.HipRight))
                 {
                     _waist = measurement;
                 }
             }
-            */
+            
         }
 
         public double getArmLeftUpper()
