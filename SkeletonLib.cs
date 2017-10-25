@@ -196,7 +196,7 @@ namespace ColourSkel
                     {
                         while(temp >= 0)
                         {
-                            _foregroundArray[temp] = 0;
+                            _foregroundArray[temp] = 255;
                             temp--;
                         }
                     }
@@ -204,9 +204,9 @@ namespace ColourSkel
                     {
                         if (Pixels[previousZero] == 0)
                         {
-                            while (temp > previousZero)
+                            while (temp >= previousZero)
                             {
-                                _foregroundArray[temp] = 0;
+                                _foregroundArray[temp] = 255;
                                 temp--;
                             }
                         }
@@ -501,7 +501,7 @@ namespace ColourSkel
                 int xValue = (int)midpoint.X - loopCount;
                 potentialStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
                 byte pixelAtPoint = getPixelValue(potentialStart);
-                if(pixelAtPoint == 0)
+                if(pixelAtPoint == 255)
                 {
                     int tempXValue = xValue;
                     Boolean check = true;
@@ -511,7 +511,7 @@ namespace ColourSkel
                         tempXValue--;
                         tempStart = measObj.getNewPoint(midpoint, perpGrad, tempXValue);
                         byte tempPixelAtPoint = getPixelValue(tempStart);
-                        if (tempPixelAtPoint != 0)
+                        if (tempPixelAtPoint != 255)
                         {
                             check = false;
                             break;
@@ -556,7 +556,7 @@ namespace ColourSkel
                 int xValue = (int)midpoint.X + loopCount;
                 potentialStart = measObj.getNewPoint(midpoint, perpGrad, xValue);
                 byte pixelAtPoint = getPixelValue(potentialStart);
-                if (pixelAtPoint == 0)
+                if (pixelAtPoint == 255)
                 {
                     int tempXValue = xValue;
                     Boolean check = true;
@@ -566,7 +566,7 @@ namespace ColourSkel
                         tempXValue++;
                         tempStart = measObj.getNewPoint(midpoint, perpGrad, tempXValue);
                         byte tempPixelAtPoint = getPixelValue(tempStart);
-                        if (tempPixelAtPoint != 0)
+                        if (tempPixelAtPoint != 255)
                         {
                             check = false;
                             break;
@@ -606,7 +606,7 @@ namespace ColourSkel
             int xValue = (int)point.X - 1;
             if (yValue > _colourImageSource.PixelHeight || xValue > _colourImageSource.PixelWidth || yValue < 0 || xValue < 0)
             {
-                return 0;
+                return 255;
             }
             int arrayVal = (int)point.Y * _foregroundStride + (int)point.X;
             return _foregroundArray[arrayVal];
