@@ -12,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+//using System.Windows.Shapes;
 using System.IO;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Toolkit;
@@ -75,8 +75,6 @@ namespace ColourSkel
         private ColorImageFrame _colourFrameIn;
 
         private DepthImageFrame _depthFrameIn;
-
-        private String _measurementsStringOutput = "Still starting up";
 
         private String _neckStringOutput = "Not available";
 
@@ -163,7 +161,7 @@ namespace ColourSkel
             //this.measureBarText.Text = skelObj.getMeasurements();
             if (_skelObj != null && _skelObj.isEmpty() == false)
             {
-                this.measureBarText.Text = _measurementsStringOutput;
+                this.statusBarText.Text = "Measurements Available to the Right";
 
                 this.NeckMeasureBlock.Text = _neckStringOutput;
                 this.ChestMeasureBlock.Text = _chestStringOutput;
@@ -187,7 +185,7 @@ namespace ColourSkel
             }
             else
             {
-                this.measureBarText.Text = "No skeleton ready yet";
+                this.statusBarText.Text = "No skeleton ready yet";
             }
         }
 
@@ -303,9 +301,6 @@ namespace ColourSkel
  
                         // Set the image we display to point to the bitmap where we'll put the image data
                         this.Image.Source = _skelObj.getOutputImage();
-
-                        // Set the output string to the most recent body measurements obtained
-                        _measurementsStringOutput = _skelObj.getBodyMeasurements();
 
                         populateStrings(_skelObj.getMostRecentMeasure());
                     }
@@ -442,17 +437,17 @@ namespace ColourSkel
                     try
                     {
                         
-                        //args.NewSensor.DepthStream.Range = this.checkBoxNearMode.IsChecked.GetValueOrDefault()
-                        //                            ? DepthRange.Near
-                        //                            : DepthRange.Default;
-                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
+                        args.NewSensor.DepthStream.Range = this.checkBoxNearMode.IsChecked.GetValueOrDefault()
+                                                    ? DepthRange.Near
+                                                    : DepthRange.Default;
+                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
                         
                     }
                     catch (InvalidOperationException)
                     {
                         // Non Kinect for Windows devices do not support Near mode, so reset back to default mode.
-                        //args.NewSensor.DepthStream.Range = DepthRange.Default;
-                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
+                        args.NewSensor.DepthStream.Range = DepthRange.Default;
+                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
                     }
 
                     //this.statusBarText.Text = Properties.Resources.ReadyForScreenshot;
@@ -464,7 +459,86 @@ namespace ColourSkel
                 }
             }
         }
-        
 
+        /// <summary>
+        /// Handles the user clicking on the screenshot button
+        /// </summary>
+        /// <param name="sender">object sending the event</param>
+        /// <param name="e">event arguments</param>
+        private void ButtonScreenshotClick(object sender, RoutedEventArgs e)
+        {
+            if (null == _sensorChooser || null == _sensorChooser.Kinect)
+            {
+                this.statusBarText.Text = "Connect Kinect First";
+                return;
+            }
+
+            int colorWidth = _foregroundBitmap.PixelWidth;
+            int colorHeight = _foregroundBitmap.PixelHeight;
+
+            // create a render target that we'll render our controls to
+            var renderBitmap = new RenderTargetBitmap(colorWidth, colorHeight, 96.0, 96.0, PixelFormats.Pbgra32);
+
+            var dv = new DrawingVisual();
+            using (var dc = dv.RenderOpen())
+            {
+                // render the color image masked out by players
+                var colorBrush = new VisualBrush(Image);
+                dc.DrawRectangle(colorBrush, null, new Rect(new Point(), new Size(colorWidth, colorHeight)));
+            }
+
+            renderBitmap.Render(dv);
+
+            // create a png bitmap encoder which knows how to save a .png file
+            BitmapEncoder encoder = new PngBitmapEncoder();
+
+            // create frame from the writable bitmap and add to encoder
+            encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+
+            var time = DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
+
+            var myPhotos = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+            var path = Path.Combine(myPhotos, "MeasurementResultPhoto-" + time + ".png");
+
+            // write the new file to disk
+            try
+            {
+                using (var fs = new FileStream(path, FileMode.Create))
+                {
+                    encoder.Save(fs);
+                }
+
+                this.statusBarText.Text = string.Format(CultureInfo.InvariantCulture, "Image saved successfully", path);
+            }
+            catch (IOException)
+            {
+                this.statusBarText.Text = string.Format(CultureInfo.InvariantCulture, "Failed to save image", path);
+            }
+        }
+
+        /// <summary>
+        /// Handles the checking or unchecking of the near mode combo box
+        /// </summary>
+        /// <param name="sender">object sending the event</param>
+        /// <param name="e">event arguments</param>
+        private void CheckBoxNearModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (null == _sensorChooser || null == _sensorChooser.Kinect)
+            {
+                return;
+            }
+
+            // will not function on non-Kinect for Windows devices
+            try
+            {
+                _sensorChooser.Kinect.DepthStream.Range = this.checkBoxNearMode.IsChecked.GetValueOrDefault()
+                                                    ? DepthRange.Near
+                                                    : DepthRange.Default;
+            }
+            catch (InvalidOperationException)
+            {
+            }
+        }
     }
 }
