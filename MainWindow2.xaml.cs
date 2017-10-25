@@ -273,7 +273,7 @@ namespace ColourSkel
                     {
                         _foregroundBitmap = new WriteableBitmap(backgroundRemovedFrame.Width, backgroundRemovedFrame.Height, 96.0, 96.0, PixelFormats.Bgra32, null);
                         
-                    }
+                    }                    
 
                     // Write the pixel data into our bitmap
                     _foregroundBitmap.WritePixels(
@@ -296,6 +296,8 @@ namespace ColourSkel
                         _skelObj.setActiveKinectSensor(_sensorChooser.Kinect);
 
                         _skelObj.populateDepthAndSkelPoints(_colourFrameIn, _depthFrameIn, _ColorFormat, _DepthFormat, 480, 640, 480, 640);
+
+                        _skelObj.setAveragePersonDepth(backgroundRemovedFrame.AverageDepth);
                         
                         _skelObj.SkeletonStart(_foregroundBitmap);
  

@@ -110,7 +110,7 @@ namespace ColourSkel
 
         private byte[] _foregroundArray;
 
-        private byte[][] _filteredArray;
+        private double _averagePersonDepth;
 
         private int _foregroundStride;
 
@@ -183,6 +183,11 @@ namespace ColourSkel
         public void setActiveKinectSensor(KinectSensor sensorIn)
         {
             _sensor = sensorIn;
+        }
+
+        public void setAveragePersonDepth(short depthIn)
+        {
+            _averagePersonDepth = ((double)depthIn) * 1.10;
         }
 
         public void setPixelArray(byte[] Pixels, int strideIn)
@@ -438,9 +443,10 @@ namespace ColourSkel
         public void DrawWaistLine(Skeleton skeleton, DrawingContext drawingContext, Point startPoint, Point endPoint, JointType jointType1, JointType jointType2)
         {
             var lineGrad = _totalMeasure.lineGrad(startPoint, endPoint);
+            var midPoint = _totalMeasure.midpoint(startPoint, endPoint);
             Point startLinePoint = getStartPoint(_totalMeasure, startPoint, lineGrad);
             Point endLinePoint = getEndPoint(_totalMeasure, endPoint, lineGrad);
-            addMeasurement(_totalMeasure, startLinePoint, endLinePoint, jointType1, jointType2);
+            addMeasurement(_totalMeasure, startLinePoint, endLinePoint, jointType1, jointType2, midPoint, lineGrad);
             Pen waistPen = _perpLineTrackedBone;
             drawingContext.DrawLine(waistPen, startLinePoint, endLinePoint);
         }
@@ -461,19 +467,84 @@ namespace ColourSkel
             //Point endPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)endPoint.X);
             Point startPerpPoint = getStartPoint(_totalMeasure, midPoint, perpGrad);
             Point endPerpPoint = getEndPoint(_totalMeasure, midPoint, perpGrad);
-            addMeasurement(_totalMeasure, startPerpPoint, endPerpPoint, jointType1, jointType2);
+            addMeasurement(_totalMeasure, startPerpPoint, endPerpPoint, jointType1, jointType2, midPoint, perpGrad);
             Pen drawPen = _perpLineTrackedBone;
             drawingContext.DrawLine(drawPen, startPerpPoint, endPerpPoint);
         }
 
-        public void addMeasurement(Measure measureObj, Point startPoint, Point endPoint, JointType jointType1, JointType jointType2)
+        public void addMeasurement(Measure measureObj, Point startPoint, Point endPoint, JointType jointType1, JointType jointType2, Point midPoint, float grad)
         {
-            SkeletonPoint skelPoint1 = getSkelPointFromPoint(startPoint);
-            SkeletonPoint skelPoint2 = getSkelPointFromPoint(endPoint);
-            _totalMeasure.addMeasurement(skelPoint1, skelPoint2, jointType1, jointType2);
+            SkeletonPoint startSkelPoint = refinedStartPoint(measureObj, startPoint, midPoint, grad);
+            SkeletonPoint endSkelPoint = refinedEndPoint(measureObj, endPoint, midPoint, grad);
+            _totalMeasure.addMeasurement(startSkelPoint, endSkelPoint, jointType1, jointType2);
         }
 
-        public SkeletonPoint refineStartPoint();
+        public Boolean isBehindPerson(SkeletonPoint skelPoint)
+        {
+            var pointDepth = skelPoint.Z;
+            if (pointDepth > _averagePersonDepth)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public SkeletonPoint refinedStartPoint(Measure measureObj, Point startPoint, Point midPoint, float grad)
+        {
+            Point refinedStartPoint = startPoint;
+            SkeletonPoint finalSkelPoint = new SkeletonPoint();
+            int loopCount = 0;
+            while (refinedStartPoint.X > 0 && refinedStartPoint.Y > 0 && refinedStartPoint.X < _colourImageSource.PixelWidth && refinedStartPoint.Y < _colourImageSource.PixelHeight)
+            {
+                //int xValue = (int)midpoint.X - loopCount * 10;
+                if (loopCount > 0)
+                {
+                    int xValue = (int)startPoint.X + loopCount;
+                    refinedStartPoint = measureObj.getNewPoint(midPoint, grad, xValue);
+                }
+
+                finalSkelPoint = getSkelPointFromPoint(refinedStartPoint);
+                if (!isBehindPerson(finalSkelPoint))
+                {
+                    break;
+                }
+                else
+                {
+                    loopCount++;
+                }                        
+            }
+            return finalSkelPoint;
+        }
+
+        public SkeletonPoint refinedEndPoint(Measure measureObj, Point startPoint, Point midPoint, float grad)
+        {
+            Point refinedEndPoint = startPoint;
+            SkeletonPoint finalSkelPoint = new SkeletonPoint();
+            int loopCount = 0;
+            while (refinedEndPoint.X > 0 && refinedEndPoint.Y > 0 && refinedEndPoint.X < _colourImageSource.PixelWidth && refinedEndPoint.Y < _colourImageSource.PixelHeight)
+            {
+                //int xValue = (int)midpoint.X - loopCount * 10;
+                if (loopCount > 0)
+                {
+                    int xValue = (int)startPoint.X - loopCount;
+                    refinedEndPoint = measureObj.getNewPoint(midPoint, grad, xValue);
+                }
+
+                finalSkelPoint = getSkelPointFromPoint(refinedEndPoint);
+                if (!isBehindPerson(finalSkelPoint))
+                {
+                    break;
+                }
+                else
+                {
+                    loopCount++;
+                }
+            }
+            return finalSkelPoint;
+        }
 
         public Point getStartPoint(Measure measObj, Point midpoint, float perpGrad)
         {
