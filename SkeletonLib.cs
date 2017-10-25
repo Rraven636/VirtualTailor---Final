@@ -187,7 +187,7 @@ namespace ColourSkel
 
         public void setAveragePersonDepth(short depthIn)
         {
-            _averagePersonDepth = ((double)depthIn) * 1.10;
+            _averagePersonDepth = ((double)depthIn) * 1.10 / 1000.0;
         }
 
         public void setPixelArray(byte[] Pixels, int strideIn)
@@ -507,7 +507,7 @@ namespace ColourSkel
                 }
 
                 finalSkelPoint = getSkelPointFromPoint(refinedStartPoint);
-                if (!isBehindPerson(finalSkelPoint))
+                if (!isBehindPerson(finalSkelPoint) && (finalSkelPoint.X != 0 && finalSkelPoint.Y != 0 && finalSkelPoint.Z != 0))
                 {
                     break;
                 }
@@ -519,9 +519,9 @@ namespace ColourSkel
             return finalSkelPoint;
         }
 
-        public SkeletonPoint refinedEndPoint(Measure measureObj, Point startPoint, Point midPoint, float grad)
+        public SkeletonPoint refinedEndPoint(Measure measureObj, Point endPoint, Point midPoint, float grad)
         {
-            Point refinedEndPoint = startPoint;
+            Point refinedEndPoint = endPoint;
             SkeletonPoint finalSkelPoint = new SkeletonPoint();
             int loopCount = 0;
             while (refinedEndPoint.X > 0 && refinedEndPoint.Y > 0 && refinedEndPoint.X < _colourImageSource.PixelWidth && refinedEndPoint.Y < _colourImageSource.PixelHeight)
@@ -529,12 +529,12 @@ namespace ColourSkel
                 //int xValue = (int)midpoint.X - loopCount * 10;
                 if (loopCount > 0)
                 {
-                    int xValue = (int)startPoint.X - loopCount;
+                    int xValue = (int)endPoint.X - loopCount;
                     refinedEndPoint = measureObj.getNewPoint(midPoint, grad, xValue);
                 }
 
                 finalSkelPoint = getSkelPointFromPoint(refinedEndPoint);
-                if (!isBehindPerson(finalSkelPoint))
+                if (!isBehindPerson(finalSkelPoint) && (finalSkelPoint.X != 0 && finalSkelPoint.Y != 0 && finalSkelPoint.Z != 0))
                 {
                     break;
                 }
