@@ -349,7 +349,7 @@ namespace ColourSkel
             SkeletonPoint skelPoint = new SkeletonPoint();
             int yValue = (int)imagePoint.Y - 1;
             int xValue = (int)imagePoint.X - 1;
-            if (yValue > _colourFormatHeight || xValue > _colourFormatWidth || yValue < 0 || xValue < 0)
+            if (yValue > (_colourFormatHeight - 1) || xValue > (_colourFormatWidth - 1) || yValue < 0 || xValue < 0)
             {
                 return skelPoint;
             }
@@ -660,7 +660,7 @@ namespace ColourSkel
         {
             int yValue = (int)point.Y - 1;
             int xValue = (int)point.X - 1;
-            if (yValue > _colourImageSource.PixelHeight || xValue > _colourImageSource.PixelWidth || yValue < 0 || xValue < 0)
+            if (yValue > (_colourImageSource.PixelHeight - 1) || xValue > (_colourImageSource.PixelWidth - 1) || yValue < 0 || xValue < 0)
             {
                 return 255;
             }
