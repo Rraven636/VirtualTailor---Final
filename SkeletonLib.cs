@@ -124,6 +124,13 @@ namespace ColourSkel
 
         private Measure _lastTotalMeasure;
 
+        private Boolean _frontMeasure = false;
+
+        private Boolean _leftMeasure = false;
+
+        private Boolean _rightMeasure = false;
+
+        private Boolean _backMeasure = false;
 
         public SkeletonLib()
         {
@@ -419,7 +426,7 @@ namespace ColourSkel
             }
 
             //Draw perpendicular lines and measure arms and legs
-            if (jointType0.Equals(JointType.ElbowLeft) || jointType1.Equals(JointType.ElbowLeft) 
+            if (jointType0.Equals(JointType.ElbowLeft) || jointType1.Equals(JointType.ElbowLeft)                
                 || jointType0.Equals(JointType.ElbowRight) || jointType1.Equals(JointType.ElbowRight) 
                 || jointType0.Equals(JointType.KneeLeft) || jointType1.Equals(JointType.KneeLeft) 
                 || jointType0.Equals(JointType.KneeRight) || jointType1.Equals(JointType.KneeRight))
@@ -842,6 +849,14 @@ namespace ColourSkel
                 }
             }
             return true;
+        }
+
+        public void setMeasureDirection(Boolean frontMeasure, Boolean leftMeasure, Boolean rightMeasure, Boolean backMeasure)
+        {
+            _frontMeasure = frontMeasure;
+            _leftMeasure = leftMeasure;
+            _rightMeasure = rightMeasure;
+            _backMeasure = backMeasure;
         }
     }
 }

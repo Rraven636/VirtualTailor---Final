@@ -98,9 +98,22 @@ namespace ColourSkel
 
         private String _legLowerRightStringOutput = "Not available";
 
+        private Boolean _frontMeasure = false;
+
+        private Boolean _leftMeasure = false;
+
+        private Boolean _rightMeasure = false;
+
+        private Boolean _backMeasure = false;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            _frontMeasure = true;
+            _leftMeasure = false;
+            _rightMeasure = false;
+            _backMeasure = false;
 
             // Initialize the sensor chooser and UI
             _sensorChooser = new KinectSensorChooser();
@@ -436,18 +449,20 @@ namespace ColourSkel
 
                     try
                     {
-                        
+
+                        /*
                         args.NewSensor.DepthStream.Range = this.checkBoxNearMode.IsChecked.GetValueOrDefault()
                                                     ? DepthRange.Near
                                                     : DepthRange.Default;
                         args.NewSensor.SkeletonStream.EnableTrackingInNearRange = true;
+                        */
                         
                     }
                     catch (InvalidOperationException)
                     {
                         // Non Kinect for Windows devices do not support Near mode, so reset back to default mode.
-                        args.NewSensor.DepthStream.Range = DepthRange.Default;
-                        args.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
+                        //args.NewSensor.DepthStream.Range = DepthRange.Default;
+                        //args.NewSensor.SkeletonStream.EnableTrackingInNearRange = false;
                     }
 
                     //this.statusBarText.Text = Properties.Resources.ReadyForScreenshot;
@@ -517,6 +532,56 @@ namespace ColourSkel
             }
         }
 
+        private void MeasureDirection(object sender, RoutedEventArgs e)
+        {
+            if ((Boolean)FrontMeasure.IsChecked)
+            {
+                _frontMeasure   = true;
+                _leftMeasure    = false;
+                _rightMeasure   = false;
+                _backMeasure    = false;
+                if(statusBarText != null)
+                {
+                    statusBarText.Text = "Front Measure On";
+                }
+                
+            }             
+            else if ((Boolean)LeftMeasure.IsChecked)
+            {
+                _frontMeasure   = false;
+                _leftMeasure    = true;
+                _rightMeasure   = false;
+                _backMeasure    = false;
+                if (statusBarText != null)
+                {
+                    statusBarText.Text = "Left Measure On";
+                }
+            }
+            else if ((Boolean)RightMeasure.IsChecked)
+            {
+                _frontMeasure   = false;
+                _leftMeasure    = false;
+                _rightMeasure   = true;
+                _backMeasure    = false;
+                if (statusBarText != null)
+                {
+                    statusBarText.Text = "Right Measure On";
+                }
+            }
+            else if ((Boolean)BackMeasure.IsChecked)
+            {
+                _frontMeasure   = false;
+                _leftMeasure    = false;
+                _rightMeasure   = false;
+                _backMeasure    = true;
+                if (statusBarText != null)
+                {
+                    statusBarText.Text = "Back Measure On";
+                }
+            }
+        }
+
+        /*
         /// <summary>
         /// Handles the checking or unchecking of the near mode combo box
         /// </summary>
@@ -540,5 +605,6 @@ namespace ColourSkel
             {
             }
         }
+        */
     }
 }

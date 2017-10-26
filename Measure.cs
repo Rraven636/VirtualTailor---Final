@@ -37,6 +37,14 @@ namespace ColourSkel
         private double _neck;
         private double _waist;
 
+        private Boolean _frontMeasure = false;
+
+        private Boolean _leftMeasure = false;
+
+        private Boolean _rightMeasure = false;
+
+        private Boolean _backMeasure = false;
+
         public Measure()
         {
             _skeletonIn = null;
@@ -112,6 +120,14 @@ namespace ColourSkel
             _chest = measureObj.getChest();
             _neck = measureObj.getNeck();
             _waist = measureObj.getWaist();
+        }
+
+        public void setMeasureDirection(Boolean frontMeasure, Boolean leftMeasure, Boolean rightMeasure, Boolean backMeasure)
+        {
+            _frontMeasure = frontMeasure;
+            _leftMeasure = leftMeasure;
+            _rightMeasure = rightMeasure;
+            _backMeasure = backMeasure;
         }
 
         public double distanceSkelPoint(SkeletonPoint p1, SkeletonPoint p2)
