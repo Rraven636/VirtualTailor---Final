@@ -271,7 +271,7 @@
         <CheckBox Grid.Row="2" Style="{StaticResource SquareCheckBox}" Content="Near Mode" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 10 10 10" Name="checkBoxNearMode" Checked="CheckBoxNearModeChanged" Unchecked="CheckBoxNearModeChanged"/>
         <StatusBar Grid.Row="3" HorizontalAlignment="Stretch" Name="measureBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
             <StatusBarItem Padding="0 0 0 10">
-                <TextBlock Name="statusBarText" Margin="-1 0 0 0">Measurements: </TextBlock>
+                <TextBlock Name="statusBarText" Margin="-1 0 0 0">Ready to begin taking measurements! </TextBlock>
             </StatusBarItem> ,
         </StatusBar>
     </Grid>
