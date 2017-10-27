@@ -106,6 +106,8 @@ namespace ColourSkel
 
         private Boolean _backMeasure = false;
 
+        private String _allLengthsOutput;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -114,6 +116,8 @@ namespace ColourSkel
             _leftMeasure = false;
             _rightMeasure = false;
             _backMeasure = false;
+
+            _allLengthsOutput = "";
 
             // Initialize the sensor chooser and UI
             _sensorChooser = new KinectSensorChooser();
@@ -170,11 +174,11 @@ namespace ColourSkel
         /// Changes the status bar text to the measurements from the skeleton object
         /// </summary>
         private void LiveMeasure()
-        {
-            //this.measureBarText.Text = skelObj.getMeasurements();
+        {            
             if (_skelObj != null && _skelObj.isEmpty() == false)
             {
-                this.statusBarText.Text = "Measurements Available to the Right";
+                statusBarText.Text = _allLengthsOutput;
+                //this.statusBarText.Text = "Measurements Available to the Right";
 
                 this.NeckMeasureBlock.Text = _neckStringOutput;
                 this.ChestMeasureBlock.Text = _chestStringOutput;
@@ -318,6 +322,8 @@ namespace ColourSkel
                         this.Image.Source = _skelObj.getOutputImage();
 
                         populateStrings(_skelObj.getMostRecentMeasure());
+
+                        _allLengthsOutput = "Left Arm: " + _skelObj.getLeftArmLength() + " Right Arm: " + _skelObj.getRightArmLength() + " Left Leg: " + _skelObj.getLeftLegLength() + " Right Leg: " + _skelObj.getRightLegLength() + " Torso: " + _skelObj.getTorsoLength();
                     }
                     else
                     {

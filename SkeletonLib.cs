@@ -93,11 +93,6 @@ namespace ColourSkel
         private Skeleton _skeletonOut;
 
         /// <summary>
-        /// Variable holding measurement reading
-        /// </summary>
-        private String _measureOut;
-
-        /// <summary>
         /// The skeletonframe sent from a skeleton ready event
         /// </summary>
         private SkeletonFrame _skelFrame;
@@ -132,6 +127,8 @@ namespace ColourSkel
 
         private Boolean _backMeasure = false;
 
+        private double _torsoLength, _leftArmLength, _rightArmLength, _leftLegLength, _rightLegLength;
+
         public SkeletonLib()
         {
             _sensor = null;
@@ -146,6 +143,11 @@ namespace ColourSkel
             _inferredJointBrush = Brushes.Yellow;
             _trackedBonePen = new Pen(Brushes.Green, 6);
             _inferredBonePen = new Pen(Brushes.Gray, 1);
+            _torsoLength = 0;
+            _leftArmLength = 0;
+            _rightArmLength = 0;
+            _leftLegLength = 0;
+            _rightLegLength = 0;
         }
 
         public void setColourFrame(ColorImageFrame colourFrame, int colourHeight, int colourWidth)
@@ -484,6 +486,10 @@ namespace ColourSkel
             //Measure measureObj = new Measure(skeleton);
             var perpGrad = _totalMeasure.perpendicularGrad(startPoint, endPoint);
             var midPoint = _totalMeasure.midpoint(startPoint, endPoint);
+            if ((jointType1.Equals(JointType.ShoulderLeft) && jointType2.Equals(JointType.ElbowLeft)) || (jointType1.Equals(JointType.ShoulderRight) && jointType2.Equals(JointType.ElbowRight)))
+            {
+                midPoint = _totalMeasure.midpoint(midPoint, endPoint);
+            }
             //Point startPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)startPoint.X);
             //Point endPerpPoint = measureObj.getNewPoint(midPoint, perpGrad, (int)endPoint.X);
             Point startPerpPoint = getStartPoint(_totalMeasure, midPoint, perpGrad);
@@ -694,65 +700,6 @@ namespace ColourSkel
         /// </summary>
         /// <param name="sender">object sending the event</param>
         /// <param name="e">event arguments</param>
-        public void SensorSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
-        {
-            Skeleton[] skeletons = new Skeleton[0];
-
-            using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            {
-                if (skeletonFrame != null)
-                {
-                    skeletons = new Skeleton[skeletonFrame.SkeletonArrayLength];
-                    skeletonFrame.CopySkeletonDataTo(skeletons);
-                }
-            }
-
-            using (DrawingContext dc = _drawingGroup.Open())
-            {
-                if(_colourImageSource != null)
-                {
-                    dc.DrawImage(_colourImageSource, new Rect(0.0, 0.0, _RenderWidth, _RenderHeight));
-                }
-                else
-                {
-                    // Draw a transparent background to set the render size
-                    dc.DrawRectangle(Brushes.Black, null, new Rect(0.0, 0.0, _RenderWidth, _RenderHeight));
-                }                
-
-                if (skeletons.Length != 0)
-                {
-                    foreach (Skeleton skel in skeletons)
-                    {
-                        RenderClippedEdges(skel, dc);
-
-                        if (skel.TrackingState == SkeletonTrackingState.Tracked)
-                        {
-                            DrawBonesAndJoints(skel, dc);
-                            _skeletonOut = skel;
-                            measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
-                        }
-                        else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
-                        {
-                            dc.DrawEllipse(
-                            _centerPointBrush,
-                            null,
-                            SkeletonPointToScreen(skel.Position),
-                            _BodyCenterThickness,
-                            _BodyCenterThickness);
-                        }                        
-                    }                    
-                }
-
-                // prevent drawing outside of our render area
-                _drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, _RenderWidth, _RenderHeight));
-            }
-        }
-
-        /// <summary>
-        /// Event handler for Kinect sensor's SkeletonFrameReady event
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
         public void processSkeletonFrame()
         {            
             using (DrawingContext dc = _drawingGroup.Open())
@@ -780,7 +727,7 @@ namespace ColourSkel
                             _totalMeasure.setMeasureDirection(_frontMeasure, _leftMeasure, _rightMeasure, _backMeasure);
                             DrawBonesAndJoints(skel, dc);
                             _totalMeasure.compensateDirection();
-                            measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
+                            getAllLengths();
                         }
                         else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
                         {
@@ -816,40 +763,88 @@ namespace ColourSkel
             return _skelFrame;
         }
 
-        public void measureJoints(JointType jointType1, JointType jointType2)
+        public double measureJoints(JointType jointType1, JointType jointType2)
         {
             Joint joint1 = _skeletonOut.Joints[jointType1];
             Joint joint2 = _skeletonOut.Joints[jointType2];
-
-            String output = "Between: " + jointType1.ToString() + " and " + jointType2.ToString();
+            
             Measure measureObj = new Measure(_skeletonOut);
-            output += " - " + measureObj.distanceJoints(joint1, joint2);
-
-            _measureOut = output;
+            double output = measureObj.distanceJoints(joint1, joint2);
+            return output;
         }
 
-        public String getBodyMeasurements()
+        public void measureLeftArmLength()
         {
-            String output = "";
-            if (_lastTotalMeasure != null)
-            {
-                output += _lastTotalMeasure.toStringArmLeftLower() + " " + _lastTotalMeasure.toStringArmLeftUpper();
-            }
-            else
-            {
-                output += "Measurements - None available yet";
-            }
-            return output;
+            double upperArm = measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
+            double lowerArm = measureJoints(JointType.ElbowLeft, JointType.WristLeft);
+            _leftArmLength = upperArm + lowerArm;
+        }
+
+        public void measureRightArmLength()
+        {
+            double upperArm = measureJoints(JointType.ShoulderRight, JointType.ElbowRight);
+            double lowerArm = measureJoints(JointType.ElbowRight, JointType.WristRight);
+            _rightArmLength = upperArm + lowerArm;
+        }
+
+        public void measureLeftLegLength()
+        {
+            double upperLeg = measureJoints(JointType.HipLeft, JointType.KneeLeft);
+            double lowerLeg = measureJoints(JointType.KneeLeft, JointType.AnkleLeft);
+            _leftLegLength = upperLeg + lowerLeg;
+        }
+
+        public void measureRightLegLength()
+        {
+            double upperLeg = measureJoints(JointType.HipRight, JointType.KneeRight);
+            double lowerLeg = measureJoints(JointType.KneeRight, JointType.AnkleRight);
+            _rightLegLength = upperLeg + lowerLeg;
+        }
+
+        public void measureTorsoLength()
+        {
+            double upperTorso = measureJoints(JointType.ShoulderCenter, JointType.Spine);
+            double lowerTorso = measureJoints(JointType.Spine, JointType.HipCenter);
+            _torsoLength = upperTorso + lowerTorso;
+        }
+
+        public void getAllLengths()
+        {
+            measureLeftArmLength();
+            measureRightArmLength();
+            measureLeftLegLength();
+            measureRightLegLength();
+            measureTorsoLength();
+        }
+
+        public double getLeftArmLength()
+        {
+            return _leftArmLength;
+        }
+
+        public double getRightArmLength()
+        {
+            return _rightArmLength;
+        }
+
+        public double getLeftLegLength()
+        {
+            return _leftLegLength;
+        }
+
+        public double getRightLegLength()
+        {
+            return _rightLegLength;
+        }
+
+        public double getTorsoLength()
+        {
+            return _torsoLength;
         }
 
         public Measure getMostRecentMeasure()
         {
             return _lastTotalMeasure;
-        }
-
-        public String getMeasurements()
-        {
-            return _measureOut;
         }
 
         public Boolean isEmpty()
