@@ -120,6 +120,11 @@ namespace ColourSkel
             _chest = measureObj.getChest();
             _neck = measureObj.getNeck();
             _waist = measureObj.getWaist();
+
+            _frontMeasure = measureObj.getFrontMeasure();
+            _leftMeasure = measureObj.getLeftMeasure();
+            _rightMeasure = measureObj.getRightMeasure();
+            _backMeasure = measureObj.getBackMeasure();
         }
 
         public void setMeasureDirection(Boolean frontMeasure, Boolean leftMeasure, Boolean rightMeasure, Boolean backMeasure)
@@ -467,6 +472,26 @@ namespace ColourSkel
             String output = "Measurements - ";
             output += toStringArmLeftUpper() + " " + toStringArmLeftLower();
             return output;
+        }
+
+        public Boolean getFrontMeasure()
+        {
+            return _frontMeasure;
+        }
+
+        public Boolean getLeftMeasure()
+        {
+            return _leftMeasure;
+        }
+
+        public Boolean getRightMeasure()
+        {
+            return _rightMeasure;
+        }
+
+        public Boolean getBackMeasure()
+        {
+            return _backMeasure;
         }
 
     }

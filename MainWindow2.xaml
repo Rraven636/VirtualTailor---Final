@@ -272,6 +272,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <StackPanel Grid.Row="2" HorizontalAlignment="Center">
@@ -302,6 +303,9 @@
                 <Button Grid.Row="2" Content="Measure" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10 10 10 10" Name="buttonMeasure" Click="ButtonMeasureClick" />
             </Grid>
             <Grid Grid.Column="2">
+                <Button Grid.Row="2" Content="Results" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10 10 10 10" Name="buttonResults" Click="ButtonResultsClick" Visibility="Hidden"/>
+            </Grid>
+            <Grid Grid.Column="3">
                 <Button Grid.Row="2" Style="{StaticResource SnapshotButton}" Content="Screenshot" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10 10 0 10" Name="buttonScreenshot"  Click="ButtonScreenshotClick" />
             </Grid>
         </Grid>

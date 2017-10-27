@@ -108,6 +108,8 @@ namespace ColourSkel
 
         private String _allLengthsOutput;
 
+        private Circumference3D _circumferenceObj;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -116,6 +118,8 @@ namespace ColourSkel
             _leftMeasure = false;
             _rightMeasure = false;
             _backMeasure = false;
+
+            _circumferenceObj = new Circumference3D();
 
             _allLengthsOutput = "";
 
@@ -323,7 +327,22 @@ namespace ColourSkel
 
                         populateStrings(_skelObj.getMostRecentMeasure());
 
-                        _allLengthsOutput = "Left Arm: " + _skelObj.getLeftArmLength() + " Right Arm: " + _skelObj.getRightArmLength() + " Left Leg: " + _skelObj.getLeftLegLength() + " Right Leg: " + _skelObj.getRightLegLength() + " Torso: " + _skelObj.getTorsoLength();
+                        addView(_skelObj.getMostRecentMeasure());
+
+                        if (_frontMeasure)
+                        {
+                            Measure tempMeas = new Measure();
+                            _allLengthsOutput = "Left Arm Length: " + tempMeas.formatToCm(_skelObj.getLeftArmLength()) 
+                                                + "\n" + "Right Arm Length: " + tempMeas.formatToCm(_skelObj.getRightArmLength()) 
+                                                + "\n" + "Left Leg Length: " + tempMeas.formatToCm(_skelObj.getLeftLegLength()) 
+                                                + "\n" + "Right Leg Length: " + tempMeas.formatToCm(_skelObj.getRightLegLength()) 
+                                                + "\n" + "Torso Length: " + tempMeas.formatToCm(_skelObj.getTorsoLength());
+                        }
+
+                        if (_circumferenceObj.allViewsReady())
+                        {
+                            buttonResults.Visibility = Visibility.Visible;
+                        }
                     }
                     else
                     {
@@ -331,6 +350,26 @@ namespace ColourSkel
                         this.Image.Source = _foregroundBitmap;
                     }
                 }
+            }
+        }
+
+        public void addView(Measure measObj)
+        {
+            if (_frontMeasure ==  true)
+            {
+                _circumferenceObj.addViewMeasurement(measObj, Circumference3D.FRONT);
+            }
+            else if (_leftMeasure == true)
+            {
+                _circumferenceObj.addViewMeasurement(measObj, Circumference3D.LEFT);
+            }
+            else if(_rightMeasure == true)
+            {
+                _circumferenceObj.addViewMeasurement(measObj, Circumference3D.RIGHT);
+            }
+            else if (_backMeasure == true)
+            {
+                _circumferenceObj.addViewMeasurement(measObj, Circumference3D.BACK);
             }
         }
 
@@ -613,6 +652,11 @@ namespace ColourSkel
                     statusBarText.Text = "Back Measure On";
                 }
             }
+        }
+
+        private void ButtonResultsClick(object sender, RoutedEventArgs e)
+        {
+
         }
 
         /*
