@@ -276,9 +276,62 @@ namespace ColourSkel
                 {
                     _waist = measurement;
                 }
-            }
-            
+            }            
         }
+
+        public void compensateDirection()
+        {
+            if (_leftMeasure == true)
+            {
+                // Set all the right limb measurements to a clearly impossible answer
+
+                // Right arm
+                _armRightUpper = -1;
+                _armRightLower = -1;
+
+                // Right leg
+                _legRightLower = -1;
+                _legRightUpper = -1;
+            }
+
+            if (_rightMeasure == true)
+            {
+                // Set all the left limb measurements to a clearly impossible answer
+
+                // Left arm
+                _armLeftUpper = -1;
+                _armLeftLower = -1;
+
+                // Left leg
+                _legLeftLower = -1;
+                _legLeftUpper = -1;
+            }
+
+            if (_backMeasure == true)
+            {
+                double tempUpper = 0.0;
+                double tempLower = 0.0;
+
+                // Swap Arms
+                tempUpper = _armLeftUpper;
+                _armLeftUpper = _armRightUpper;
+                _armRightUpper = tempUpper;
+
+                tempLower = _armLeftLower;
+                _armLeftLower = _armRightLower;
+                _armRightLower = tempLower;
+
+                // Swap Legs
+                tempUpper = _legLeftUpper;
+                _legLeftUpper = _legRightUpper;
+                _legRightUpper = tempUpper;
+
+                tempLower = _legLeftLower;
+                _legLeftLower = _legRightLower;
+                _legRightLower = tempLower;
+            }
+        }
+
 
         public double getArmLeftUpper()
         {

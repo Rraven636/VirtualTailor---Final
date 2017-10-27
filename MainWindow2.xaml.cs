@@ -302,6 +302,8 @@ namespace ColourSkel
                              bitmapArray, 
                              stride, 
                              0);
+                        _skelObj.setMeasureDirection(_frontMeasure, _leftMeasure, _rightMeasure, _backMeasure);
+
                         _skelObj.setPixelArray(bitmapArray, stride);
 
                         _skelObj.setActiveKinectSensor(_sensorChooser.Kinect);
@@ -332,21 +334,47 @@ namespace ColourSkel
             _waistStringOutput = measureObj.toStringWaist();
             _chestStringOutput = measureObj.toStringChest();
 
-            //Left Arm
-            _armUpperLeftStringOutput = measureObj.toStringArmLeftUpper();
-            _armLowerLeftStringOutput = measureObj.toStringArmLeftLower();
+            if (_rightMeasure == false)
+            {
+                //Left Arm
+                _armUpperLeftStringOutput = measureObj.toStringArmLeftUpper();
+                _armLowerLeftStringOutput = measureObj.toStringArmLeftLower();
 
-            //Right Arm
-            _armUpperRightStringOutput = measureObj.toStringArmRightUpper();
-            _armLowerRightStringOutput = measureObj.toStringArmRightLower();
+                //Left Leg
+                _legUpperLeftStringOutput = measureObj.toStringLegLeftUpper();
+                _legLowerLeftStringOutput = measureObj.toStringLegLeftLower();
+            }
+            else
+            {
+                //Left Arm
+                _armUpperLeftStringOutput = "N/A in Right Measure Mode";
+                _armLowerLeftStringOutput = "N/A in Right Measure Mode";
 
-            //Left Leg
-            _legUpperLeftStringOutput = measureObj.toStringLegLeftUpper();
-            _legLowerLeftStringOutput = measureObj.toStringLegLeftLower();
+                //Left Leg
+                _legUpperLeftStringOutput = "N/A in Right Measure Mode";
+                _legLowerLeftStringOutput = "N/A in Right Measure Mode";
+            }
 
-            //Right Leg 
-            _legUpperRightStringOutput = measureObj.toStringLegRightUpper();
-            _legLowerRightStringOutput = measureObj.toStringLegRightLower();
+            if (_leftMeasure == false)
+            {
+                //Right Arm
+                _armUpperRightStringOutput = measureObj.toStringArmRightUpper();
+                _armLowerRightStringOutput = measureObj.toStringArmRightLower();
+
+                //Right Leg 
+                _legUpperRightStringOutput = measureObj.toStringLegRightUpper();
+                _legLowerRightStringOutput = measureObj.toStringLegRightLower();
+            }
+            else
+            {
+                //Right Arm
+                _armUpperRightStringOutput = "N/A in Left Measure Mode";
+                _armLowerRightStringOutput = "N/A in Left Measure Mode";
+
+                //Right Leg 
+                _legUpperRightStringOutput = "N/A in Left Measure Mode";
+                _legLowerRightStringOutput = "N/A in Left Measure Mode";
+            }
         }
 
         /// <summary>

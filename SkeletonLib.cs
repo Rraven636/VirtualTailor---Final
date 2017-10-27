@@ -283,35 +283,47 @@ namespace ColourSkel
         {
             // Render Torso
             DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
-            DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
-            DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
             DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
             DrawBone(skeleton, drawingContext, JointType.Spine, JointType.HipCenter);
-            DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
-            DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
+            if (_rightMeasure == false)
+            {
+                DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
+                DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipLeft);
+            }
+            if (_leftMeasure == false)
+            {
+                DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
+                DrawBone(skeleton, drawingContext, JointType.HipCenter, JointType.HipRight);
+            }
 
             // Waistline
-            DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.HipRight);
+            DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.HipRight); 
+            
+            if (_rightMeasure == false)
+            {
+                // Left Arm
+                DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
+                DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
+                DrawBone(skeleton, drawingContext, JointType.WristLeft, JointType.HandLeft);
 
-            // Left Arm
-            DrawBone(skeleton, drawingContext, JointType.ShoulderLeft, JointType.ElbowLeft);
-            DrawBone(skeleton, drawingContext, JointType.ElbowLeft, JointType.WristLeft);
-            DrawBone(skeleton, drawingContext, JointType.WristLeft, JointType.HandLeft);
+                // Left Leg
+                DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
+                DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
+                DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
+            }
+            
+            if (_leftMeasure == false)
+            {
+                // Right Arm
+                DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
+                DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
+                DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
 
-            // Right Arm
-            DrawBone(skeleton, drawingContext, JointType.ShoulderRight, JointType.ElbowRight);
-            DrawBone(skeleton, drawingContext, JointType.ElbowRight, JointType.WristRight);
-            DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
-
-            // Left Leg
-            DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft);
-            DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft);
-            DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft);
-
-            // Right Leg
-            DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
-            DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
-            DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
+                // Right Leg
+                DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
+                DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
+                DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
+            }
 
             // Render Joints
             foreach (Joint joint in skeleton.Joints)
@@ -322,10 +334,12 @@ namespace ColourSkel
                 {
                     drawBrush = _trackedJointBrush;
                 }
+                /*
                 else if (joint.TrackingState == JointTrackingState.Inferred)
                 {
                     drawBrush = _inferredJointBrush;
                 }
+                */
 
                 if (drawBrush != null)
                 {
@@ -763,7 +777,9 @@ namespace ColourSkel
                         {
                             _skeletonOut = skel;
                             _totalMeasure = new Measure(_skeletonOut);
+                            _totalMeasure.setMeasureDirection(_frontMeasure, _leftMeasure, _rightMeasure, _backMeasure);
                             DrawBonesAndJoints(skel, dc);
+                            _totalMeasure.compensateDirection();
                             measureJoints(JointType.ShoulderLeft, JointType.ElbowLeft);
                         }
                         else if (skel.TrackingState == SkeletonTrackingState.PositionOnly)
