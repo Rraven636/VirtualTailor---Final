@@ -93,11 +93,11 @@
             <TextBlock Grid.Column="2" Margin="0 0 -1 0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Virtual Tailor Beta</TextBlock>
             <k:KinectSensorChooserUI Grid.Column="1" HorizontalAlignment="Center" Margin="0 0 0 5" VerticalAlignment="Top" Name="sensorChooserUi" />
         </Grid>
-        <Grid Grid.Row="1" Margin="0 0 0 20">
+        <Grid Grid.Row="1" Margin="0 0 0 20">            
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+            </Grid.ColumnDefinitions>            
             <Viewbox Grid.Column="0" Stretch="Uniform" HorizontalAlignment="Center">
                 <Image Name="Image" Width="640" Height="480"/>
             </Viewbox>
@@ -264,7 +264,7 @@
                         </Border>
                     </Grid>
                 </Grid>
-            </Grid>
+            </Grid>           
         </Grid>
         
         <Grid Grid.Row="2">
@@ -309,11 +309,48 @@
                 <Button Grid.Row="2" Style="{StaticResource SnapshotButton}" Content="Screenshot" Height="Auto" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10 10 0 10" Name="buttonScreenshot"  Click="ButtonScreenshotClick" />
             </Grid>
         </Grid>
-               
+
         <StatusBar Grid.Row="3" HorizontalAlignment="Stretch" Name="measureBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
             <StatusBarItem Padding="0 0 0 10">
-                <TextBlock Name="statusBarText" Margin="-1 0 0 0">Ready to begin taking measurements! </TextBlock>
+                <TextBlock Name="statusBarText" Margin="-1 0 0 0">Ready to begin taking measurements!</TextBlock>
             </StatusBarItem> ,
         </StatusBar>
+
+        <Popup Name="ResultsPopup"
+               Placement="Center"
+               IsOpen="False">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Margin="10">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Lengths</TextBlock>
+                    </Grid>
+                    <Grid Grid.Column="1" Margin="10">
+                        <TextBlock Name="All_Lengths" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="14"></TextBlock>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Margin="10">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Circumferences</TextBlock>
+                    </Grid>
+                    <Grid Grid.Column="1" Margin="10">
+                        <TextBlock Name="All_Circumferences" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="14"></TextBlock>
+                    </Grid>
+                </Grid>
+                <Button Grid.Row="2" Click="ButtonDoneClick" Margin="20">Done</Button>                
+            </Grid>
+        </Popup>
     </Grid>
 </Window>

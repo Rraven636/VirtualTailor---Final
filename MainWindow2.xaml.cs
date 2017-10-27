@@ -332,11 +332,11 @@ namespace ColourSkel
                         if (_frontMeasure)
                         {
                             Measure tempMeas = new Measure();
-                            _allLengthsOutput = "Left Arm Length: " + tempMeas.formatToCm(_skelObj.getLeftArmLength()) 
-                                                + "\n" + "Right Arm Length: " + tempMeas.formatToCm(_skelObj.getRightArmLength()) 
-                                                + "\n" + "Left Leg Length: " + tempMeas.formatToCm(_skelObj.getLeftLegLength()) 
-                                                + "\n" + "Right Leg Length: " + tempMeas.formatToCm(_skelObj.getRightLegLength()) 
-                                                + "\n" + "Torso Length: " + tempMeas.formatToCm(_skelObj.getTorsoLength());
+                            _allLengthsOutput = "Left Arm: " + "\t" + tempMeas.formatToCm(_skelObj.getLeftArmLength()) + "cm"
+                                                + "\n" + "Right Arm: " + "\t" + tempMeas.formatToCm(_skelObj.getRightArmLength()) + "cm"
+                                                + "\n" + "Left Leg: " + "\t" + tempMeas.formatToCm(_skelObj.getLeftLegLength()) + "cm"
+                                                + "\n" + "Right Leg: " + "\t" + tempMeas.formatToCm(_skelObj.getRightLegLength()) + "cm"
+                                                + "\n" + "Torso: " + "\t" + tempMeas.formatToCm(_skelObj.getTorsoLength()) + "cm";
                         }
 
                         if (_circumferenceObj.allViewsReady())
@@ -392,12 +392,12 @@ namespace ColourSkel
             else
             {
                 //Left Arm
-                _armUpperLeftStringOutput = "N/A in Right Measure Mode";
-                _armLowerLeftStringOutput = "N/A in Right Measure Mode";
+                _armUpperLeftStringOutput = "N/A in Right Mode";
+                _armLowerLeftStringOutput = "N/A in Right Mode";
 
                 //Left Leg
-                _legUpperLeftStringOutput = "N/A in Right Measure Mode";
-                _legLowerLeftStringOutput = "N/A in Right Measure Mode";
+                _legUpperLeftStringOutput = "N/A in Right Mode";
+                _legLowerLeftStringOutput = "N/A in Right Mode";
             }
 
             if (_leftMeasure == false)
@@ -413,12 +413,12 @@ namespace ColourSkel
             else
             {
                 //Right Arm
-                _armUpperRightStringOutput = "N/A in Left Measure Mode";
-                _armLowerRightStringOutput = "N/A in Left Measure Mode";
+                _armUpperRightStringOutput = "N/A in Left Mode";
+                _armLowerRightStringOutput = "N/A in Left Mode";
 
                 //Right Leg 
-                _legUpperRightStringOutput = "N/A in Left Measure Mode";
-                _legLowerRightStringOutput = "N/A in Left Measure Mode";
+                _legUpperRightStringOutput = "N/A in Left Mode";
+                _legLowerRightStringOutput = "N/A in Left Mode";
             }
         }
 
@@ -656,7 +656,23 @@ namespace ColourSkel
 
         private void ButtonResultsClick(object sender, RoutedEventArgs e)
         {
+            All_Lengths.Text = _allLengthsOutput;
+            All_Circumferences.Text = _circumferenceObj.toStringAllCircumferences();
+            _sensorChooser.Kinect.AllFramesReady -= this.SensorAllFramesReady;
+            ResultsPopup.IsOpen = true;
+        }
 
+        private void ButtonDoneClick(object sender, RoutedEventArgs e)
+        {
+            _allLengthsOutput = "";
+            _circumferenceObj = new Circumference3D();
+            FrontMeasure.IsChecked = true;
+            _frontMeasure = true;
+            _leftMeasure = false;
+            _rightMeasure = false;
+            _backMeasure = false;
+            _sensorChooser.Kinect.AllFramesReady += this.SensorAllFramesReady;
+            ResultsPopup.IsOpen = false;
         }
 
         /*

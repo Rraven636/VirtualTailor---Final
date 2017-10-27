@@ -233,5 +233,39 @@ namespace ColourSkel
             return _chestCircum;
         }
 
+        public String toStringSingleCircum(double circum)
+        {
+            String output = "";
+            if (circum <= 0)
+            {
+                output = "Not enough information";
+            }
+            else
+            {
+               output = _differentViewMeasurements[0].formatToCm(circum) + "cm";
+            }
+            return output;
+        }
+
+        public String toStringAllCircumferences()
+        {
+            String output = "";
+
+            output = "Chest: \t" + toStringSingleCircum(_chestCircum)
+                    + "\nWaist: \t" + toStringSingleCircum(_waistCircum)
+
+                    + "\nUpper Left Arm: \t" + toStringSingleCircum(_upperLeftArmCircum)
+                    + "\nLower Left Arm: \t" + toStringSingleCircum(_lowerLeftArmCircum)
+                    + "\nUpper Right Arm: \t" + toStringSingleCircum(_upperRightArmCircum)
+                    + "\nLower Right Arm: \t" + toStringSingleCircum(_lowerRightArmCircum)
+
+                    + "\nUpper Left Leg: \t" + toStringSingleCircum(_upperLeftLegCircum)
+                    + "\nLower Left Leg: \t" + toStringSingleCircum(_lowerLeftLegCircum)
+                    + "\nUpper Right Leg: \t" + toStringSingleCircum(_upperRightLegCircum)
+                    + "\nLower Right Leg: \t" + toStringSingleCircum(_lowerRightLegCircum);
+
+            return output;
+        }
+
     }
 }
