@@ -110,6 +110,8 @@ namespace ColourSkel
 
         private Circumference3D _circumferenceObj;
 
+        private Boolean _shouldMeasure = true;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -118,6 +120,8 @@ namespace ColourSkel
             _leftMeasure = false;
             _rightMeasure = false;
             _backMeasure = false;
+
+            _shouldMeasure = true;
 
             _circumferenceObj = new Circumference3D();
 
@@ -181,7 +185,7 @@ namespace ColourSkel
         {            
             if (_skelObj != null && _skelObj.isEmpty() == false)
             {
-                statusBarText.Text = _allLengthsOutput;
+                //statusBarText.Text = _allLengthsOutput;
                 //this.statusBarText.Text = "Measurements Available to the Right";
 
                 this.NeckMeasureBlock.Text = _neckStringOutput;
@@ -217,7 +221,8 @@ namespace ColourSkel
         /// <param name="e"></param>
         private void ButtonMeasureClick(object sender, RoutedEventArgs e)
         {
-            LiveMeasure();
+            //LiveMeasure();
+            _shouldMeasure = true;
         }
         
         /// <summary>
@@ -285,7 +290,7 @@ namespace ColourSkel
         {
             using (var backgroundRemovedFrame = e.OpenBackgroundRemovedColorFrame())
             {
-                if (backgroundRemovedFrame != null)
+                if (backgroundRemovedFrame != null && _shouldMeasure == true)
                 {
                     if (null == _foregroundBitmap || _foregroundBitmap.PixelWidth != backgroundRemovedFrame.Width
                         || _foregroundBitmap.PixelHeight != backgroundRemovedFrame.Height)
@@ -329,14 +334,20 @@ namespace ColourSkel
 
                         addView(_skelObj.getMostRecentMeasure());
 
+                        LiveMeasure();
+
+                        _shouldMeasure = false;
+
+                        statusBarText.Text = "Measurement Complete";
+
                         if (_frontMeasure)
                         {
                             Measure tempMeas = new Measure();
-                            _allLengthsOutput = "Left Arm: " + "\t" + tempMeas.formatToCm(_skelObj.getLeftArmLength()) + "cm"
+                            _allLengthsOutput = "Left Arm:  " + "\t" + tempMeas.formatToCm(_skelObj.getLeftArmLength()) + "cm"
                                                 + "\n" + "Right Arm: " + "\t" + tempMeas.formatToCm(_skelObj.getRightArmLength()) + "cm"
-                                                + "\n" + "Left Leg: " + "\t" + tempMeas.formatToCm(_skelObj.getLeftLegLength()) + "cm"
+                                                + "\n" + "Left Leg:  " + "\t" + tempMeas.formatToCm(_skelObj.getLeftLegLength()) + "cm"
                                                 + "\n" + "Right Leg: " + "\t" + tempMeas.formatToCm(_skelObj.getRightLegLength()) + "cm"
-                                                + "\n" + "Torso: " + "\t" + tempMeas.formatToCm(_skelObj.getTorsoLength()) + "cm";
+                                                + "\n" + "Torso:     " + "\t\t" + tempMeas.formatToCm(_skelObj.getTorsoLength()) + "cm";
                         }
 
                         if (_circumferenceObj.allViewsReady())
@@ -344,11 +355,17 @@ namespace ColourSkel
                             buttonResults.Visibility = Visibility.Visible;
                         }
                     }
+                    /*
                     else
                     {
                         // Set the image we display to point to the bitmap where we'll put the image data
                         this.Image.Source = _foregroundBitmap;
                     }
+                    */
+                }
+                if (_shouldMeasure == false && _skelObj.isEmpty() == false)
+                {
+                    statusBarText.Text = "New Measurement can be taken";
                 }
             }
         }
@@ -672,6 +689,7 @@ namespace ColourSkel
             _rightMeasure = false;
             _backMeasure = false;
             _sensorChooser.Kinect.AllFramesReady += this.SensorAllFramesReady;
+            buttonResults.Visibility = Visibility.Hidden;
             ResultsPopup.IsOpen = false;
         }
 

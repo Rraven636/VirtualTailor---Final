@@ -51,19 +51,16 @@ namespace ColourSkel
                 }
             }
 
+            measureAllLimbs();
+
             return true;
         }
 
-        public Boolean measureAllLimbs()
+        public void measureAllLimbs()
         {
-            if (allViewsReady())
-            {
-                measureLeftLimbs();
-                measureRightLimbs();
-                measureMajors();
-                return true;
-            }
-            return false;
+            measureLeftLimbs();
+            measureRightLimbs();
+            measureMajors();
         }
 
         public void measureLeftLimbs()
@@ -251,8 +248,8 @@ namespace ColourSkel
         {
             String output = "";
 
-            output = "Chest: \t" + toStringSingleCircum(_chestCircum)
-                    + "\nWaist: \t" + toStringSingleCircum(_waistCircum)
+            output = "Chest: \t\t" + toStringSingleCircum(_chestCircum)
+                    + "\nWaist: \t\t" + toStringSingleCircum(_waistCircum)
 
                     + "\nUpper Left Arm: \t" + toStringSingleCircum(_upperLeftArmCircum)
                     + "\nLower Left Arm: \t" + toStringSingleCircum(_lowerLeftArmCircum)

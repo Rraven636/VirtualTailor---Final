@@ -300,7 +300,7 @@
                 </StackPanel>
             </Grid>
             <Grid Grid.Column="1">
-                <Button Grid.Row="2" Content="Measure" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10 10 10 10" Name="buttonMeasure" Click="ButtonMeasureClick" />
+                <Button Grid.Row="2" Content="Take Measurement" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10 10 10 10" Name="buttonMeasure" Click="ButtonMeasureClick" />
             </Grid>
             <Grid Grid.Column="2">
                 <Button Grid.Row="2" Content="Results" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10 10 10 10" Name="buttonResults" Click="ButtonResultsClick" Visibility="Hidden"/>
@@ -349,7 +349,7 @@
                         <TextBlock Name="All_Circumferences" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="14"></TextBlock>
                     </Grid>
                 </Grid>
-                <Button Grid.Row="2" Click="ButtonDoneClick" Margin="20">Done</Button>                
+                <Button Grid.Row="2" Click="ButtonDoneClick" Margin="20">Start Again</Button>                
             </Grid>
         </Popup>
     </Grid>
