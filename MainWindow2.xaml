@@ -90,7 +90,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>            
-            <TextBlock Grid.Column="2" Margin="0 0 -1 0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Virtual Tailor Beta</TextBlock>
+            <TextBlock Grid.Column="2" Margin="0 0 -1 0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Virtual Tailor</TextBlock>
             <k:KinectSensorChooserUI Grid.Column="1" HorizontalAlignment="Center" Margin="0 0 0 5" VerticalAlignment="Top" Name="sensorChooserUi" />
         </Grid>
         <Grid Grid.Row="1" Margin="0 0 0 20">            
@@ -121,7 +121,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Border BorderThickness="1" BorderBrush="Gray">
-                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Neck</TextBlock>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Name</TextBlock>
                     </Border>
                 </Grid>
                 <Grid Grid.Row="1">
@@ -129,7 +129,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Border BorderThickness="1" BorderBrush="Gray">
-                        <TextBlock Grid.Column="0" Name ="NeckMeasureBlock" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="16"></TextBlock>
+                        <TextBox Grid.Column="0"  Name ="NameInput" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18"> Volunteer </TextBox>
                     </Border>
                 </Grid>
                 

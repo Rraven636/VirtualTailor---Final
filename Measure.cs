@@ -34,7 +34,7 @@ namespace ColourSkel
         private double _legRightLower;
 
         private double _chest;
-        private double _neck;
+        //private double _neck;
         private double _waist;
 
         private Boolean _frontMeasure = false;
@@ -66,7 +66,7 @@ namespace ColourSkel
             _legRightLower = 0;
             
             _chest = 0;
-            _neck = 0;
+            //_neck = 0;
             _waist = 0;
         }
 
@@ -91,7 +91,7 @@ namespace ColourSkel
             _legRightLower = 0;
 
             _chest = 0;
-            _neck = 0;
+            //_neck = 0;
             _waist = 0;
         }
 
@@ -118,7 +118,7 @@ namespace ColourSkel
             _legRightLower = measureObj.getLegRightLower();
 
             _chest = measureObj.getChest();
-            _neck = measureObj.getNeck();
+            //_neck = measureObj.getNeck();
             _waist = measureObj.getWaist();
 
             _frontMeasure = measureObj.getFrontMeasure();
@@ -263,7 +263,7 @@ namespace ColourSkel
                     _chest = measurement;
                 }
             }
-
+            /*
             // Neck
             if (jointType1.Equals(JointType.Head))
             {
@@ -272,7 +272,7 @@ namespace ColourSkel
                     _neck = measurement;
                 }
             }
-
+            */
             
             // Waist
             if (jointType1.Equals(JointType.HipLeft))
@@ -383,10 +383,12 @@ namespace ColourSkel
             return _chest;
         }
 
+        /*
         public double getNeck()
         {
             return _neck;
         }
+        */
 
         public double getWaist()
         {
@@ -457,10 +459,12 @@ namespace ColourSkel
             return "Chest: " + formatToCm(getChest()) + "cm";
         }
 
+        /*
         public String toStringNeck()
         {
             return "Neck: " + formatToCm(getNeck()) + "cm";
         }
+        */
 
         public String toStringWaist()
         {

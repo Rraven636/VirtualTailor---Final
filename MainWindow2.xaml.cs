@@ -76,7 +76,7 @@ namespace ColourSkel
 
         private DepthImageFrame _depthFrameIn;
 
-        private String _neckStringOutput = "Not available";
+        //private String _neckStringOutput = "Not available";
 
         private String _chestStringOutput = "Not available";
 
@@ -188,7 +188,7 @@ namespace ColourSkel
                 //statusBarText.Text = _allLengthsOutput;
                 //this.statusBarText.Text = "Measurements Available to the Right";
 
-                this.NeckMeasureBlock.Text = _neckStringOutput;
+                //this.NeckMeasureBlock.Text = _neckStringOutput;
                 this.ChestMeasureBlock.Text = _chestStringOutput;
                 this.WaistMeasureBlock.Text = _waistStringOutput;
 
@@ -392,7 +392,7 @@ namespace ColourSkel
 
         public void populateStrings(Measure measureObj)
         {
-            _neckStringOutput = measureObj.toStringNeck();
+            //_neckStringOutput = measureObj.toStringNeck();
             _waistStringOutput = measureObj.toStringWaist();
             _chestStringOutput = measureObj.toStringChest();
 
